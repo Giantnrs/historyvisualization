@@ -1,0 +1,64 @@
+<!-- filepath: /history-visualization/history-visualization/history.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History Visualization</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <style>
+        /* Custom styles can go here */
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen flex flex-col font-sans overflow-hidden">
+
+    <header class="bg-white border-b border-slate-200 p-4 shadow">
+        <h1 class="text-2xl font-bold">History Visualization</h1>
+    </header>
+
+    <main class="flex-1 flex overflow-hidden">
+        <div id="map" class="w-1/2 h-full"></div>
+        <div class="w-1/2 p-4 overflow-y-auto">
+            <div id="timelineContainer" class="relative h-64 border border-slate-300 rounded-lg">
+                <div id="chinaTrack" class="absolute inset-0"></div>
+                <div id="worldTrack" class="absolute inset-0"></div>
+                <div id="spikesContainer" class="absolute inset-0"></div>
+            </div>
+            <input type="range" id="yearSlider" class="w-full mt-4" disabled />
+            <div class="flex justify-between mt-2">
+                <span id="minYearLabel"></span>
+                <span id="maxYearLabel"></span>
+            </div>
+            <div class="flex items-center mt-4">
+                <select id="windowSelect" class="mr-2">
+                    <option value="5">5 Years</option>
+                    <option value="10">10 Years</option>
+                    <option value="20">20 Years</option>
+                </select>
+                <button id="playBtn" class="bg-blue-600 text-white px-4 py-2 rounded">
+                    <span id="iconPlay">▶</span>
+                    <span id="iconPause" class="hidden">⏸</span>
+                </button>
+                <label class="ml-4">
+                    <input type="checkbox" id="chinaOnlyToggle" />
+                    China Only
+                </label>
+            </div>
+            <div id="eventsList" class="mt-4"></div>
+            <div id="eventCount" class="mt-2"></div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 p-4 shrink-0 shadow-[0_-4px_15px_-3px_rgba(0,0,0,0.1)] z-10">
+        <div class="max-w-7xl mx-auto">
+            <p class="text-center text-slate-600">© 2023 History Visualization Project</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/papaparse/5.3.0/papaparse.min.js"></script>
+    <script>
+        // JavaScript code for handling data visualization, user interactions, and map functionalities goes here.
+    </script>
+</body>
+</html>
