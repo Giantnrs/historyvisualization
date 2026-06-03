@@ -17,7 +17,7 @@ The History Visualization project is a web application designed to visualize his
    ```
 
 2. **Open the HTML File**
-   Open `history.html` in your preferred web browser to view the application.
+   python3 -m http.server 8000
 
 3. **Dependencies**
    Ensure you have an internet connection to load external libraries such as Leaflet for map functionalities.

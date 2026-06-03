@@ -160,20 +160,31 @@
 
                 <div class="flex items-center space-x-3">
                     <label class="text-sm font-medium text-slate-600">Time Window:</label>
-                    <select id="windowSelect" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 cursor-pointer outline-none">
-                        <option value="0">Exact Year</option>
-                        <option value="10">± 10 Years</option>
-                        <option value="50" selected>± 50 Years</option>
-                        <option value="100">± 100 Years</option>
-                        <option value="500">± 500 Years</option>
-                    </select>
+                    <div id="windowDropdown" class="relative">
+                        <button id="windowBtn"
+                            class="flex items-center gap-2 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:border-blue-400 hover:shadow-md transition-all cursor-pointer min-w-[120px]">
+                            <span id="windowBtnLabel" class="flex-1 text-left font-medium">± 50 Years</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="windowMenu"
+                            class="hidden absolute bottom-full mb-2 left-0 z-[9999] bg-white border border-slate-200 rounded-xl shadow-2xl min-w-[160px] py-1">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex items-center space-x-2 border-l border-slate-300 pl-4 ml-2">
                     <label class="text-sm font-medium text-slate-600">Category:</label>
-                    <select id="categorySelect" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 cursor-pointer outline-none max-w-[160px] truncate disabled:opacity-50" disabled>
-                        <option value="All">All Categories</option>
-                    </select>
+                    <div id="categoryDropdown" class="relative">
+                        <button id="categoryBtn" disabled
+                            class="flex items-center gap-2 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:border-blue-400 hover:shadow-md transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed min-w-[155px] max-w-[200px]">
+                            <span id="categoryBtnEmoji" class="text-base leading-none">🗂️</span>
+                            <span id="categoryBtnLabel" class="flex-1 text-left truncate font-medium">All Categories</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="categoryMenu"
+                            class="hidden absolute bottom-full mb-2 left-0 z-[9999] bg-white border border-slate-200 rounded-xl shadow-2xl min-w-[200px] py-1">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex items-center space-x-2 border-l border-slate-300 pl-4 ml-2">
@@ -333,7 +344,68 @@
         const currentYearDisplay = document.getElementById('currentYearDisplay');
         const minYearLabel = document.getElementById('minYearLabel');
         const maxYearLabel = document.getElementById('maxYearLabel');
-        const windowSelect = document.getElementById('windowSelect');
+        const windowBtn      = document.getElementById('windowBtn');
+        const windowBtnLabel = document.getElementById('windowBtnLabel');
+        const windowMenu     = document.getElementById('windowMenu');
+        let   selectedWindow = 50;
+
+        const windowOptions = [
+            { value: 0,   label: 'Exact Year'  },
+            { value: 10,  label: '± 10 Years'  },
+            { value: 50,  label: '± 50 Years'  },
+            { value: 100, label: '± 100 Years' },
+            { value: 500, label: '± 500 Years' },
+        ];
+
+        function buildWindowMenu() {
+            windowMenu.innerHTML = '';
+            windowOptions.forEach(opt => {
+                const item = document.createElement('button');
+                item.type = 'button';
+                item.className = `w-full flex items-center px-3 py-2 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors text-left ${opt.value === selectedWindow ? 'bg-blue-50 text-blue-700 font-semibold' : ''}`;
+                item.textContent = opt.label;
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectedWindow = opt.value;
+                    windowBtnLabel.textContent = opt.label;
+                    windowMenu.classList.add('hidden');
+                    windowMenu.querySelectorAll('button').forEach(b => {
+                        const active = b === item;
+                        b.classList.toggle('bg-blue-50', active);
+                        b.classList.toggle('text-blue-700', active);
+                        b.classList.toggle('font-semibold', active);
+                    });
+                    updateVisualization();
+                });
+                windowMenu.appendChild(item);
+            });
+        }
+
+        // Teleport a menu to <body> and position it above its trigger button.
+        // This escapes any ancestor stacking context so the menu always renders on top.
+        function openMenu(menu, btn) {
+            if (menu.parentElement !== document.body) {
+                document.body.appendChild(menu);
+                menu.style.position = 'fixed';
+                menu.style.zIndex   = '99999';
+                // Remove layout-relative positioning classes that no longer apply
+                menu.classList.remove('absolute', 'bottom-full', 'mb-2', 'left-0');
+            }
+            const r = btn.getBoundingClientRect();
+            menu.style.left   = r.left + 'px';
+            menu.style.bottom = (window.innerHeight - r.top + 8) + 'px';
+            menu.style.top    = '';
+            menu.classList.remove('hidden');
+        }
+
+        windowBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            buildWindowMenu();
+            const isOpen = !windowMenu.classList.contains('hidden');
+            categoryMenu.classList.add('hidden');
+            if (isOpen) { windowMenu.classList.add('hidden'); } else { openMenu(windowMenu, windowBtn); }
+        });
+        document.addEventListener('click', () => { windowMenu.classList.add('hidden'); });
         const playBtn = document.getElementById('playBtn');
         const iconPlay = document.getElementById('iconPlay');
         const iconPause = document.getElementById('iconPause');
@@ -348,7 +420,31 @@
         
         const chinaOnlyToggle = document.getElementById('chinaOnlyToggle');
         const parallelToggle = document.getElementById('parallelToggle');
-        const categorySelect = document.getElementById('categorySelect');
+        const categoryBtn      = document.getElementById('categoryBtn');
+        const categoryBtnEmoji = document.getElementById('categoryBtnEmoji');
+        const categoryBtnLabel = document.getElementById('categoryBtnLabel');
+        const categoryMenu     = document.getElementById('categoryMenu');
+        let   selectedCategory = 'All';
+
+        function setCategorySelection(value, emoji, label) {
+            selectedCategory       = value;
+            categoryBtnEmoji.textContent = emoji;
+            categoryBtnLabel.textContent = label;
+            categoryMenu.classList.add('hidden');
+            drawSpikes();
+            updateVisualization();
+        }
+
+        categoryBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = !categoryMenu.classList.contains('hidden');
+            windowMenu.classList.add('hidden');
+            if (isOpen) { categoryMenu.classList.add('hidden'); } else { openMenu(categoryMenu, categoryBtn); }
+        });
+        document.addEventListener('click', () => {
+            categoryMenu.classList.add('hidden');
+            windowMenu.classList.add('hidden');
+        });
         
         const countryFilterContainer = document.getElementById('countryFilterContainer');
         const activeCountryLabel = document.getElementById('activeCountryLabel');
@@ -519,6 +615,24 @@
             if (cat.includes('milestone') || cat.includes('history') || cat.includes('event')) return '🚩';
             if (cat.includes('civilization') || cat.includes('empire') || cat.includes('dynasty') || cat.includes('settlement')) return '🏛️';
             return '📍'; 
+        }
+
+        function buildCategoryMenuItem(value, emoji, label) {
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = `w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors text-left ${value === selectedCategory ? 'bg-blue-50 text-blue-700 font-semibold' : ''}`;
+            item.innerHTML = `<span class="text-base leading-none w-5 text-center">${emoji}</span><span class="truncate">${label}</span>`;
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                setCategorySelection(value, emoji, label);
+                // re-highlight active item
+                categoryMenu.querySelectorAll('button').forEach(b => {
+                    b.classList.toggle('bg-blue-50', b === item);
+                    b.classList.toggle('text-blue-700', b === item);
+                    b.classList.toggle('font-semibold', b === item);
+                });
+            });
+            return item;
         }
 
         // Intelligent scroll logic to find specific events when markers or other lists are clicked
@@ -771,9 +885,16 @@
 
             if (eventsData.length === 0) { alert("No valid events found."); return; }
 
-            categorySelect.innerHTML = '<option value="All">All Categories</option>';
+            // Build custom category dropdown
+            selectedCategory = 'All';
+            categoryBtnEmoji.textContent = '🗂️';
+            categoryBtnLabel.textContent = 'All Categories';
+            categoryMenu.innerHTML = '';
+            const allItem = buildCategoryMenuItem('All', '🗂️', 'All Categories');
+            categoryMenu.appendChild(allItem);
             Array.from(categories).sort().forEach(cat => {
-                const opt = document.createElement('option'); opt.value = cat; opt.textContent = cat; categorySelect.appendChild(opt);
+                const emoji = getCategoryEmoji(cat);
+                categoryMenu.appendChild(buildCategoryMenuItem(cat, emoji, cat));
             });
 
             eventsData.sort((a, b) => a.numYear - b.numYear);
@@ -782,7 +903,7 @@
             minYear = globalMinYear; maxYear = globalMaxYear;
             yearSlider.value = minYear; 
             
-            yearSlider.disabled = false; playBtn.disabled = false; chinaOnlyToggle.disabled = false; categorySelect.disabled = false; parallelToggle.disabled = false;
+            yearSlider.disabled = false; playBtn.disabled = false; chinaOnlyToggle.disabled = false; categoryBtn.disabled = false; parallelToggle.disabled = false;
             updateTimelineBounds();
         }
 
@@ -905,7 +1026,7 @@
             connectingDotsContainer.innerHTML = '';
             if (maxYear === minYear) return;
 
-            const selectedCat = categorySelect.value;
+            const selectedCat = selectedCategory;
             const spikeFrag = document.createDocumentFragment();
             const dotFrag = document.createDocumentFragment();
 
@@ -1031,7 +1152,7 @@
         function updateWindowBracket() {
             const bracket = document.getElementById('windowBracket');
             if (!bracket || maxYear === minYear) return;
-            const windowSize = parseInt(windowSelect.value, 10);
+            const windowSize = selectedWindow;
             if (windowSize === 0) { bracket.style.display = 'none'; return; }
             const currentYear = parseInt(yearSlider.value, 10);
             const range = maxYear - minYear;
@@ -1045,8 +1166,8 @@
 
         function updateVisualization() {
             const currentYear = parseInt(yearSlider.value, 10);
-            const windowSize = parseInt(windowSelect.value, 10);
-            const selectedCat = categorySelect.value;
+            const windowSize = selectedWindow;
+            const selectedCat = selectedCategory;
             currentYearDisplay.textContent = formatYear(currentYear);
             updateWindowBracket();
             
@@ -1201,8 +1322,6 @@
 
         // UI Event Listeners
         yearSlider.addEventListener('input', updateVisualization);
-        windowSelect.addEventListener('change', updateVisualization);
-        categorySelect.addEventListener('change', () => { drawSpikes(); updateVisualization(); });
         chinaOnlyToggle.addEventListener('change', () => { drawSpikes(); updateVisualization(); });
         parallelToggle.addEventListener('change', updateVisualization);
 
