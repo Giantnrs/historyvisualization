@@ -69,22 +69,6 @@
 </head>
 <body class="bg-slate-50 text-slate-800 h-screen flex flex-col font-sans overflow-hidden relative">
 
-    <!-- Auto-hiding Header Wrapper -->
-    <div class="absolute top-0 w-full h-16 z-[2000] transition-transform duration-300 transform -translate-y-full hover:translate-y-0 group">
-        <header class="bg-slate-900 text-white h-16 flex items-center justify-between px-6 shadow-md w-full">
-            <div class="flex items-center space-x-3">
-                <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <h1 class="text-xl font-bold tracking-wide">Historical Events Explorer</h1>
-            </div>
-        </header>
-        <!-- Pull tab hint -->
-        <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-slate-300 px-6 py-1.5 rounded-b-lg text-[10px] font-bold tracking-widest shadow-md cursor-pointer group-hover:opacity-0 transition-opacity flex items-center justify-center">
-            ▼ MENU
-        </div>
-        <!-- Invisible extended hover hit-area -->
-        <div class="absolute -bottom-6 w-full h-6 cursor-pointer"></div>
-    </div>
-
     <!-- Main Content Area -->
     <main class="flex-1 flex overflow-hidden relative">
         
@@ -221,11 +205,11 @@
 
             <!-- Slider -->
             <div class="flex items-center space-x-4">
-                <span id="minYearLabel" class="text-xs font-medium text-slate-500 w-12 text-right">Min</span>
-                <div id="timelineContainer" class="relative w-full h-16 flex items-center justify-center cursor-crosshair" title="Scroll to zoom | Drag to pan timeline">
-                    
+                <span id="minYearLabel" class="text-xs font-medium text-slate-500 w-12 shrink-0 text-right">Min</span>
+                <div id="timelineContainer" class="relative flex-1 min-w-0 h-16 flex items-center justify-center cursor-crosshair overflow-hidden" title="Scroll to zoom | Drag to pan timeline">
+
                     <!-- Zoom/Pan Hint -->
-                    <div class="absolute -top-1 left-1/2 -translate-x-1/2 text-[9px] font-bold tracking-wider text-slate-400 uppercase pointer-events-none">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 text-[9px] font-bold tracking-wider text-slate-400 uppercase pointer-events-none">
                         Scroll to zoom • Click/Drag to pan
                     </div>
                     
@@ -254,7 +238,14 @@
                     <!-- Cross-track Connecting Dots — must be a sibling of the slider at z-[30] so it renders above it -->
                     <div id="connectingDotsContainer" class="absolute inset-x-0 h-[44px] mt-2 z-[30] pointer-events-none"></div>
                 </div>
-                <span id="maxYearLabel" class="text-xs font-medium text-slate-500 w-12 text-left">Max</span>
+                <span id="maxYearLabel" class="text-xs font-medium text-slate-500 w-12 shrink-0 text-left">Max</span>
+            </div>
+
+            <!-- Year Axis -->
+            <div class="flex items-start space-x-4 mt-1">
+                <div class="w-12 shrink-0"></div>
+                <div id="yearAxis" class="relative flex-1 min-w-0 h-6 pointer-events-none overflow-hidden"></div>
+                <div class="w-12 shrink-0"></div>
             </div>
 
         </div>
@@ -2041,6 +2032,7 @@
             
             renderTimelineBands();
             drawSpikes();
+            renderYearAxis();
             updateVisualization();
         }
 
@@ -2094,6 +2086,51 @@
 
             renderTrack(topPeriods, tTrack);
             renderTrack(bottomPeriods, bTrack);
+        }
+
+        // Render year tick-mark axis below the two timeline tracks
+        function renderYearAxis() {
+            const axisEl = document.getElementById('yearAxis');
+            if (!axisEl || maxYear === minYear) return;
+            axisEl.innerHTML = '';
+
+            const range = maxYear - minYear;
+
+            // Pick a "nice" round interval so we get roughly 6-10 ticks
+            const rawInterval = range / 8;
+            const magnitude = Math.pow(10, Math.floor(Math.log10(Math.max(1, rawInterval))));
+            const norm = rawInterval / magnitude;
+            let interval = norm < 1.5 ? magnitude
+                         : norm < 3.5 ? 2 * magnitude
+                         : norm < 7.5 ? 5 * magnitude
+                         : 10 * magnitude;
+            interval = Math.max(1, Math.round(interval));
+
+            const frag = document.createDocumentFragment();
+            const firstTick = Math.ceil(minYear / interval) * interval;
+
+            for (let year = firstTick; year <= maxYear; year += interval) {
+                const pct = ((year - minYear) / range) * 100;
+                if (pct < 0 || pct > 100) continue;
+
+                const tick = document.createElement('div');
+                tick.style.left = `${pct}%`;
+                tick.style.transform = 'translateX(-50%)';
+                tick.className = 'absolute top-0 flex flex-col items-center';
+
+                const line = document.createElement('div');
+                line.className = 'w-px h-1.5 bg-slate-400';
+
+                const lbl = document.createElement('span');
+                lbl.className = 'text-[8px] text-slate-500 font-medium whitespace-nowrap mt-0.5';
+                lbl.textContent = year < 0 ? `${Math.abs(year)} BC` : `${year}`;
+
+                tick.appendChild(line);
+                tick.appendChild(lbl);
+                frag.appendChild(tick);
+            }
+
+            axisEl.appendChild(frag);
         }
 
         // Draw spikes and cross-track connecting dots
