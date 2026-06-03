@@ -231,6 +231,10 @@
                         <div id="spikesContainer" class="absolute inset-0 z-10"></div>
                     </div>
 
+                    <!-- Time Window Bracket -->
+                    <div id="windowBracket" class="absolute h-[44px] mt-2 z-[15] pointer-events-none"
+                         style="display:none; border-left:1.5px solid rgba(59,130,246,0.75); border-right:1.5px solid rgba(59,130,246,0.75); background:rgba(59,130,246,0.07);"></div>
+
                     <!-- Range Slider -->
                     <input type="range" id="yearSlider" min="0" max="100" value="50" disabled
                         class="absolute inset-0 w-full h-full custom-range z-20 m-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
@@ -1875,9 +1879,23 @@
             }
 
             let html = `<h3 class="text-2xl font-serif font-bold text-slate-900 mb-1">${data.title}</h3><p class="text-sm text-slate-500 mb-5 italic">${data.description || ''}</p>`;
-            if (data.thumbnail) html += `<img src="${data.thumbnail}" class="w-full max-h-[800px] object-contain rounded-xl mb-5 shadow-sm" alt="${data.title}">`;
+            if (data.thumbnail) html += `<img src="${data.thumbnail}" class="w-full object-contain rounded-xl mb-5 shadow-sm" alt="${data.title}">`;
             html += `<div class="text-slate-700 text-sm leading-relaxed mb-6 space-y-3">${data.extract_html}</div><a href="${data.page}" target="_blank" class="inline-flex items-center space-x-2 text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold transition-colors shadow"><span>Read full article on Wikipedia</span></a>`;
             wikiContent.innerHTML = html;
+
+            // Cap portrait images to 1.1× the height a landscape (4:3) photo would occupy
+            const wikiImg = wikiContent.querySelector('img');
+            if (wikiImg) {
+                const applyPortraitCap = () => {
+                    if (wikiImg.naturalHeight > wikiImg.naturalWidth) {
+                        // reference landscape height = display-width × (3/4); cap portrait at 1.1× that
+                        const maxH = wikiImg.offsetWidth * (3 / 4) * 1.1;
+                        wikiImg.style.maxHeight = maxH + 'px';
+                    }
+                };
+                if (wikiImg.complete && wikiImg.naturalWidth) applyPortraitCap();
+                else wikiImg.addEventListener('load', applyPortraitCap, { once: true });
+            }
         }
 
         // Thumbnail Observer for Parallel Mode
@@ -2262,11 +2280,27 @@
         }
 
         // Unified rendering manager
+        function updateWindowBracket() {
+            const bracket = document.getElementById('windowBracket');
+            if (!bracket || maxYear === minYear) return;
+            const windowSize = parseInt(windowSelect.value, 10);
+            if (windowSize === 0) { bracket.style.display = 'none'; return; }
+            const currentYear = parseInt(yearSlider.value, 10);
+            const range = maxYear - minYear;
+            const leftPct  = Math.max(0,   ((currentYear - windowSize - minYear) / range) * 100);
+            const rightPct = Math.min(100,  ((currentYear + windowSize - minYear) / range) * 100);
+            if (rightPct <= leftPct) { bracket.style.display = 'none'; return; }
+            bracket.style.left  = `${leftPct}%`;
+            bracket.style.width = `${rightPct - leftPct}%`;
+            bracket.style.display = 'block';
+        }
+
         function updateVisualization() {
             const currentYear = parseInt(yearSlider.value, 10);
             const windowSize = parseInt(windowSelect.value, 10);
             const selectedCat = categorySelect.value;
             currentYearDisplay.textContent = formatYear(currentYear);
+            updateWindowBracket();
             
             const startYear = currentYear - windowSize;
             const endYear = currentYear + windowSize;
