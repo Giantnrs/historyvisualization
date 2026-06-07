@@ -33,6 +33,13 @@
         #map {
             z-index: 1;
         }
+        /* Animated flowing dashes on route arcs */
+        @keyframes dashFlow {
+            to { stroke-dashoffset: -34; }
+        }
+        .leaflet-overlay-pane svg path.animated-route {
+            animation: dashFlow 1.2s linear infinite;
+        }
         .leaflet-popup-content-wrapper {
             border-radius: 0.5rem;
         }
@@ -660,12 +667,38 @@
             }, 100); 
         }
 
+        // Draw a quadratic-bezier curved dashed arc between two lat/lng points
+        function curvedArc(p1, p2, opts) {
+            const steps = 60;
+            const midLat = (p1[0] + p2[0]) / 2;
+            const midLng = (p1[1] + p2[1]) / 2;
+            const dLat   = p2[0] - p1[0];
+            const dLng   = p2[1] - p1[1];
+            const dist   = Math.sqrt(dLat * dLat + dLng * dLng) || 1;
+            // Perpendicular unit vector — bows the line away from the straight path
+            const curvature = dist * 0.3;
+            const ctrlLat = midLat + (-dLng / dist) * curvature;
+            const ctrlLng = midLng + ( dLat / dist) * curvature;
+            const pts = [];
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                pts.push([
+                    (1-t)*(1-t)*p1[0] + 2*(1-t)*t*ctrlLat + t*t*p2[0],
+                    (1-t)*(1-t)*p1[1] + 2*(1-t)*t*ctrlLng + t*t*p2[1]
+                ]);
+            }
+            return L.polyline(pts, opts);
+        }
+
         function drawEventLines(ev, targetLayer) {
             if (ev.allCoords && ev.allCoords.length > 1) {
                 const primary = ev.allCoords[0];
                 for (let i = 1; i < ev.allCoords.length; i++) {
                     const secondary = ev.allCoords[i];
-                    L.polyline([primary, secondary], { color: '#3b82f6', weight: 2, opacity: 0.6, dashArray: '5, 5', lineCap: 'round' }).addTo(targetLayer);
+                    const arc = curvedArc(primary, secondary, { color: '#e11d48', weight: 2.5, opacity: 0.75, dashArray: '10, 7', lineCap: 'round' });
+                    arc.addTo(targetLayer);
+                    // Add flowing-dash animation once the SVG path is in the DOM
+                    arc.on('add', () => { const el = arc.getElement(); if (el) el.classList.add('animated-route'); });
                     
                     const secRadius = 12;
                     const emoji = getCategoryEmoji(ev.category);
