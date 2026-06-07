@@ -40,37 +40,164 @@
         .leaflet-overlay-pane svg path.animated-route {
             animation: dashFlow 1.2s linear infinite;
         }
+        .route-arrow-wrap {
+            background: transparent !important;
+            border: none !important;
+        }
         .leaflet-popup-content-wrapper {
             border-radius: 0.5rem;
         }
+        .event-card .event-emoji {
+            font-size: 1.25rem;
+            line-height: 1;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.15));
+        }
         
-        /* Custom range slider for the dual-track timeline */
-        .custom-range {
-            -webkit-appearance: none;
-            appearance: none;
-            background: transparent;
+        /* Dual-handle time range selector on the timeline */
+        #windowBracket {
+            pointer-events: auto;
+            border: 2px solid rgba(37, 99, 235, 0.95);
+            background: rgba(59, 130, 246, 0.28);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.55) inset, 0 0 16px rgba(59, 130, 246, 0.45);
+            border-radius: 3px;
         }
-        .custom-range:focus {
-            outline: none;
+        .range-handle {
+            position: absolute;
+            top: -14px;
+            bottom: -14px;
+            width: 20px;
+            cursor: ew-resize;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .custom-range::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 60px; /* Spans both tracks */
-            width: 4px;
-            background: #3b82f6; /* blue-500 */
-            border-radius: 2px;
-            cursor: pointer;
-            border: 1px solid white;
-            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+        .range-handle::after {
+            content: '';
+            width: 9px;
+            height: 56px;
+            background: #f97316;
+            border-radius: 4px;
+            border: 2px solid white;
+            box-shadow: 0 0 8px rgba(249, 115, 22, 0.65);
         }
-        .custom-range::-moz-range-thumb {
-            height: 60px;
-            width: 4px;
-            background: #3b82f6;
-            border-radius: 2px;
-            cursor: pointer;
-            border: 1px solid white;
-            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+        .range-handle-left { left: -10px; }
+        .range-handle-right { right: -10px; }
+        #rangeBody {
+            position: absolute;
+            inset: 0;
+            cursor: grab;
+            z-index: 1;
+        }
+        #rangeBody:active { cursor: grabbing; }
+        .timeline-dim {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background: rgba(30, 41, 59, 0.58);
+            pointer-events: none;
+            z-index: 15;
+            transition: width 0.08s ease, left 0.08s ease;
+        }
+        .timeline-dim-left { left: 0; }
+        .timeline-dim-right { right: 0; }
+        .timeline-edge-hint {
+            pointer-events: none;
+            width: 52px;
+            height: 52px;
+            padding: 8px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #fdba74;
+            box-shadow: 0 2px 10px rgba(234, 88, 12, 0.35);
+            color: #ea580c;
+            flex-shrink: 0;
+        }
+        .timeline-edge-hint-left {
+            animation: timeline-hint-nudge-right 2s ease-in-out infinite;
+        }
+        .timeline-edge-hint-right {
+            animation: timeline-hint-nudge-left 2s ease-in-out infinite;
+        }
+        .timeline-edge-hint-icon {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        @keyframes timeline-hint-nudge-right {
+            0%, 100% { transform: translateX(0); opacity: 0.65; }
+            50% { transform: translateX(6px); opacity: 1; }
+        }
+        @keyframes timeline-hint-nudge-left {
+            0%, 100% { transform: translateX(0); opacity: 0.65; }
+            50% { transform: translateX(-6px); opacity: 1; }
+        }
+        #timelineSliderRow.timeline-hints-dismissed .timeline-edge-hint {
+            display: none;
+        }
+        .period-label-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .period-color-swatch {
+            width: 11px;
+            height: 11px;
+            border-radius: 3px;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.75);
+            box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.12);
+        }
+        #periodHeader {
+            position: relative;
+            height: 28px;
+            flex-shrink: 0;
+            overflow: visible;
+        }
+        #periodLabels {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 20px;
+            padding-left: 2.5rem;
+            overflow: visible;
+            pointer-events: none;
+        }
+        .period-label-wrap {
+            overflow: visible;
+        }
+        .period-label-text {
+            white-space: nowrap;
+        }
+        #periodColorBar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 11px;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #e2e8f0;
+            border: 1px solid #cbd5e1;
+        }
+        .period-color-seg {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.65);
+        }
+        .country-dot {
+            width: 11px;
+            height: 11px;
+            background: #fbbf24;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.95), 0 0 4px rgba(255, 255, 255, 0.9);
+        }
+        .country-dot-selected {
+            background: #6366f1;
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.95), 0 0 4px rgba(255, 255, 255, 0.9);
         }
     </style>
 </head>
@@ -79,18 +206,24 @@
     <!-- Main Content Area -->
     <main class="flex-1 flex overflow-hidden relative">
         
-        <!-- Sidebar: Event List -->
-        <aside id="mainSidebar" class="w-96 bg-white border-r border-slate-200 flex flex-col shadow-[4px_0_15px_-3px_rgba(0,0,0,0.1)] z-10 transition-transform">
-            <div class="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center shrink-0">
-                <h2 class="text-lg font-semibold text-slate-700">Events in Timeframe</h2>
-                <span id="eventCount" class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded-full">0</span>
+        <!-- Sidebar: China column + optional compare column -->
+        <aside id="mainSidebar" class="w-72 bg-white border-r border-slate-200 flex flex-col shadow-[4px_0_15px_-3px_rgba(0,0,0,0.1)] z-10 transition-all duration-300 shrink-0">
+            <div class="p-3 border-b border-slate-200 bg-slate-50 shrink-0">
+                <div class="flex justify-between items-center mb-1">
+                    <h2 class="text-lg font-semibold text-slate-700">Events</h2>
+                    <span id="eventCount" class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded-full">0</span>
+                </div>
+                <p id="mapHint" class="text-[11px] text-slate-500 leading-snug">Default: <strong>all China + world events</strong> in the time range (~1244). <strong>Click a country</strong> to compare with China (linked + same-year only). <strong>Click an event</strong> for details.</p>
             </div>
-            
-            <div id="eventsList" class="flex-1 overflow-y-auto p-4 space-y-4">
-                <!-- Initial State -->
-                <div class="text-center text-slate-500 mt-10">
-                    <svg class="w-12 h-12 mx-auto mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <p>Please upload the dataset to view events.</p>
+            <div id="columnHeaders" class="shrink-0 border-b-2 border-slate-200 text-xs font-bold bg-gradient-to-r from-red-50 to-blue-50">
+                <div class="px-3 py-2 flex justify-between items-center gap-2 text-slate-800">
+                    <span id="eventsColumnTitle" class="truncate">🇨🇳 CHINA · 🌍 WORLD</span>
+                    <span id="eventsColumnCount" class="bg-white/80 text-slate-700 text-[10px] px-1.5 py-0.5 rounded-full shrink-0 border border-slate-200">0</span>
+                </div>
+            </div>
+            <div id="eventsRows" class="flex-1 overflow-y-auto">
+                <div class="text-center text-slate-500 mt-10 px-4">
+                    <p class="text-sm">Please upload the dataset to view events.</p>
                 </div>
             </div>
         </aside>
@@ -99,18 +232,21 @@
         <div id="mapWrapper" class="flex-1 flex relative overflow-hidden">
             <!-- Map Container -->
             <div id="map" class="flex-1 bg-slate-200 relative transition-all duration-300 cursor-pointer">
+                <div id="mapSelectionHint" class="absolute top-3 left-1/2 -translate-x-1/2 z-[500] bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-xs font-medium text-indigo-700 shadow-md pointer-events-none hidden">
+                    Comparing with <span id="compareCountryLabel">—</span>
+                </div>
                 <div id="loadingOverlay" class="absolute inset-0 bg-white/80 z-[1000] flex flex-col items-center justify-center hidden">
                     <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mb-4"></div>
                     <p class="text-slate-700 font-medium loading-text">Processing geographic data...</p>
                 </div>
             </div>
 
-            <!-- Wikipedia Panel (Half size of map area) -->
-            <div id="wikiPanel" class="w-1/2 bg-white border-l border-slate-200 flex-col shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.1)] z-[1000] hidden transition-all duration-300">
+            <!-- Event Detail Panel (shown when user clicks an event) -->
+            <div id="wikiPanel" class="w-[380px] shrink-0 bg-white border-l border-slate-200 flex-col shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.1)] z-[1000] hidden transition-all duration-300">
                 <div class="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center shrink-0">
                     <div class="flex items-center space-x-2">
                         <svg class="w-5 h-5 text-slate-600" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
-                        <h2 class="text-lg font-semibold text-slate-700">Historical Context</h2>
+                        <h2 class="text-lg font-semibold text-slate-700">Event Details</h2>
                     </div>
                     <button id="closeWikiBtn" class="text-slate-400 hover:text-red-500 transition-colors" title="Close Panel">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -120,23 +256,6 @@
                     <!-- Wiki content injected here -->
                 </div>
             </div>
-        </div>
-
-        <!-- Parallel History Overlay View -->
-        <div id="parallelView" class="absolute inset-0 z-[1500] bg-white hidden flex-col overflow-hidden">
-            <!-- Fixed column headers -->
-            <div class="flex shrink-0 border-b-2 border-slate-200 shadow-sm">
-                <div class="flex-1 bg-red-50 text-red-800 px-4 py-3 font-bold text-sm border-r border-red-200 flex justify-between items-center">
-                    <span>🇨🇳 CHINA</span>
-                    <span id="parallelLeftCount" class="bg-red-200 text-red-900 text-xs px-2 py-0.5 rounded-full">0</span>
-                </div>
-                <div class="flex-1 bg-blue-50 text-blue-800 px-4 py-3 font-bold text-sm flex justify-between items-center">
-                    <span id="parallelRightTitle">🌍 WORLD</span>
-                    <span id="parallelRightCount" class="bg-blue-200 text-blue-900 text-xs px-2 py-0.5 rounded-full">0</span>
-                </div>
-            </div>
-            <!-- Single synchronized scrollable rows -->
-            <div id="parallelRows" class="flex-1 overflow-y-auto"></div>
         </div>
 
     </main>
@@ -156,21 +275,17 @@
                     </button>
                     
                     <div class="flex flex-col">
-                        <span class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Selected Year</span>
-                        <span id="currentYearDisplay" class="text-2xl font-bold text-slate-800">----</span>
-                    </div>
-                </div>
-
-                <div class="flex items-center space-x-3">
-                    <label class="text-sm font-medium text-slate-600">Time Window:</label>
-                    <div id="windowDropdown" class="relative">
-                        <button id="windowBtn"
-                            class="flex items-center gap-2 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:border-blue-400 hover:shadow-md transition-all cursor-pointer min-w-[120px]">
-                            <span id="windowBtnLabel" class="flex-1 text-left font-medium">± 50 Years</span>
-                            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                        </button>
-                        <div id="windowMenu"
-                            class="hidden absolute bottom-full mb-2 left-0 z-[9999] bg-white border border-slate-200 rounded-xl shadow-2xl min-w-[160px] py-1">
+                        <span class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Time Range</span>
+                        <div id="rangeInputGroup" class="flex items-center gap-1.5" title="Click to enter years, press Enter to locate">
+                            <input type="number" id="rangeStartInput" disabled
+                                class="w-[76px] text-xl font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-md px-2 py-0.5 text-center hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                placeholder="----" aria-label="Start year" />
+                            <span class="text-xl font-bold text-slate-400 select-none">—</span>
+                            <input type="number" id="rangeEndInput" disabled
+                                class="w-[76px] text-xl font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-md px-2 py-0.5 text-center hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                placeholder="----" aria-label="End year" style="
+                                padding-right: 1px;
+                             "/>
                         </div>
                     </div>
                 </div>
@@ -190,80 +305,64 @@
                     </div>
                 </div>
 
-                <div class="flex items-center space-x-2 border-l border-slate-300 pl-4 ml-2">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="chinaOnlyToggle" class="sr-only peer" disabled>
-                        <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500 disabled:opacity-50"></div>
-                        <span class="ml-2 text-sm font-medium text-slate-600">China Only</span>
-                    </label>
-                </div>
-                
-                <!-- NEW: Parallel History Toggle -->
-                <div class="flex items-center space-x-2 border-l border-slate-300 pl-4 ml-2">
-                    <label class="relative inline-flex items-center cursor-pointer" title="Compare China history with the rest of the world">
-                        <input type="checkbox" id="parallelToggle" class="sr-only peer" disabled>
-                        <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 disabled:opacity-50"></div>
-                        <span class="ml-2 text-sm font-bold text-indigo-700 uppercase tracking-wide">Parallel Mode</span>
-                    </label>
-                </div>
-
-                <!-- Dynamic Country Filter UI -->
-                <div id="countryFilterContainer" class="hidden items-center space-x-2 border-l border-slate-300 pl-4 ml-2">
-                    <span class="text-sm font-medium text-slate-600">Focus:</span>
-                    <span id="activeCountryLabel" class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded">Country</span>
-                    <button id="clearCountryBtn" class="text-slate-400 hover:text-red-500 transition-colors" title="Clear Country Filter">
+                <!-- Compare countries status -->
+                <div id="compareStatusContainer" class="hidden items-center space-x-2 border-l border-slate-300 pl-4 ml-2">
+                    <span id="compareStatusLabel" class="text-xs font-medium text-indigo-700">Compare: —</span>
+                    <button id="clearCompareBtn" class="text-slate-400 hover:text-red-500 transition-colors" title="Clear country selection">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </button>
                 </div>
             </div>
 
             <!-- Slider -->
-            <div class="flex items-center space-x-4">
-                <span id="minYearLabel" class="text-xs font-medium text-slate-500 w-12 shrink-0 text-right">Min</span>
-                <div id="timelineContainer" class="relative flex-1 min-w-0 h-16 flex items-center justify-center cursor-crosshair overflow-hidden" title="Scroll to zoom | Drag to pan timeline">
-
-                    <!-- Zoom/Pan Hint -->
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 text-[9px] font-bold tracking-wider text-slate-400 uppercase pointer-events-none">
-                        Scroll to zoom • Click/Drag to pan
+            <div id="timelineSliderRow" class="flex items-end space-x-3">
+                <div class="w-14 shrink-0 flex flex-col items-end justify-end gap-1 pb-1">
+                    <div class="timeline-edge-hint timeline-edge-hint-left" aria-hidden="true" title="Drag handle">
+                        <svg class="timeline-edge-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
                     </div>
-                    
-                    <!-- Background Tracks Container -->
-                    <div class="absolute inset-x-0 h-[44px] flex flex-col justify-between pointer-events-none mt-2">
-                        <!-- Top Track (ALWAYS China) -->
-                        <div class="relative w-full h-[20px] bg-slate-100 rounded-sm shadow-inner overflow-hidden border border-slate-300">
-                            <div id="topTrack" class="absolute inset-0"></div>
-                            <div id="topTrackLabel" class="absolute left-1 top-0 text-[8px] text-slate-400 font-bold z-0 bg-white/50 px-1 rounded-sm mt-0.5">CHINA</div>
-                        </div>
-                        
-                        <!-- World Periods Track -->
-                        <div class="relative w-full h-[20px] bg-slate-100 rounded-sm shadow-inner overflow-hidden border border-slate-300">
-                            <div id="bottomTrack" class="absolute inset-0"></div>
-                            <div id="bottomTrackLabel" class="absolute left-1 bottom-0 text-[8px] text-slate-400 font-bold z-0 bg-white/50 px-1 rounded-sm mb-0.5">WORLD</div>
-                        </div>
-                        
-                        <!-- Spikes Container (Overlays tracks) -->
-                        <div id="spikesContainer" class="absolute inset-0 z-10"></div>
-                    </div>
-
-                    <!-- Time Window Bracket -->
-                    <div id="windowBracket" class="absolute h-[44px] mt-2 z-[15] pointer-events-none"
-                         style="display:none; border-left:1.5px solid rgba(59,130,246,0.75); border-right:1.5px solid rgba(59,130,246,0.75); background:rgba(59,130,246,0.07);"></div>
-
-                    <!-- Range Slider -->
-                    <input type="range" id="yearSlider" min="0" max="100" value="50" disabled
-                        class="absolute inset-0 w-full h-full custom-range z-20 m-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-
-                    <!-- Cross-track Connecting Dots — must be a sibling of the slider at z-[30] so it renders above it -->
-                    <div id="connectingDotsContainer" class="absolute inset-x-0 h-[44px] mt-2 z-[30] pointer-events-none"></div>
+                    <span id="minYearLabel" class="text-xs font-medium text-slate-500 text-right">Min</span>
                 </div>
-                <span id="maxYearLabel" class="text-xs font-medium text-slate-500 w-12 shrink-0 text-left">Max</span>
+                <div id="timelineOuterWrap" class="relative flex-1 min-w-0 pt-3 overflow-visible">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 text-[9px] font-bold tracking-wider text-slate-400 uppercase pointer-events-none whitespace-nowrap z-[1]">
+                        Scroll to zoom • Drag orange handles to select range
+                    </div>
+                    <div id="timelineContainer" class="relative w-full h-[72px] flex items-end justify-center cursor-crosshair overflow-visible" title="Scroll to zoom | Drag empty area to pan | Drag handles to select time range">
+
+                    <div id="timelineMain" class="absolute inset-x-0 bottom-0 flex flex-col">
+                        <div id="periodHeader">
+                            <div id="periodLabels"></div>
+                            <div id="periodColorBar"></div>
+                        </div>
+                        <!-- Event track + range selector (position fixed, independent of period line) -->
+                        <div id="timelineTrackWrap" class="relative h-8 shrink-0 mt-1">
+                            <div class="relative w-full h-full bg-slate-200/80 rounded-sm shadow-inner overflow-hidden border border-slate-300 pointer-events-none">
+                                <div id="mainTrack" class="absolute inset-0"></div>
+                            </div>
+                            <div id="spikesContainer" class="absolute inset-0 z-10 pointer-events-none"></div>
+                            <div id="timelineDimLeft" class="timeline-dim timeline-dim-left"></div>
+                            <div id="timelineDimRight" class="timeline-dim timeline-dim-right"></div>
+                            <div id="windowBracket" class="absolute inset-0 z-[20] hidden">
+                                <div id="rangeBody" title="Drag to move selection"></div>
+                                <div id="rangeHandleLeft" class="range-handle range-handle-left" title="Drag to set start year"></div>
+                                <div id="rangeHandleRight" class="range-handle range-handle-right" title="Drag to set end year"></div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div class="w-14 shrink-0 flex flex-col items-start justify-end gap-1 pb-1">
+                    <div class="timeline-edge-hint timeline-edge-hint-right" aria-hidden="true" title="Drag handle">
+                        <svg class="timeline-edge-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </div>
+                    <span id="maxYearLabel" class="text-xs font-medium text-slate-500 text-left">Max</span>
+                </div>
             </div>
 
             <!-- Year Axis -->
-            <div class="flex items-start space-x-4 mt-1">
-                <div class="w-12 shrink-0"></div>
-                <div id="yearAxis" class="relative flex-1 min-w-0 h-6 pointer-events-none overflow-hidden"></div>
-                <div class="w-12 shrink-0"></div>
+            <div class="flex items-start space-x-3 mt-1.5">
+                <div class="w-14 shrink-0"></div>
+                <div id="yearAxis" class="relative flex-1 min-w-0 h-7 pointer-events-none overflow-hidden"></div>
+                <div class="w-14 shrink-0"></div>
             </div>
 
         </div>
@@ -281,11 +380,19 @@
         let activeLinesLayer; 
         let isPlaying = false;
         let playInterval;
-        let minYear = 0;
+        const AD_MIN_YEAR = 1;
+        const MIN_RANGE_SPAN = 1;
+        let minYear = AD_MIN_YEAR;
         let maxYear = 0;
-        let globalMinYear = 0; 
-        let globalMaxYear = 0; 
-        let selectedCountry = null;
+        let globalMinYear = AD_MIN_YEAR;
+        let globalMaxYear = 0;
+        let rangeStartYear = AD_MIN_YEAR;
+        let rangeEndYear = AD_MIN_YEAR;
+        let selectedEventId = null; 
+        let compareCountryKey = null;
+        let countryDotsLayer;
+        let lastCompareKey = '';
+        const CHINA_COORDS_KEY = 'china';
 
         // Wikipedia Global Cache
         const wikiCache = new Map(); 
@@ -297,16 +404,18 @@
         let lastMouseX = 0;
         let dragRafId = null;
 
+        // Range selection drag
+        let rangeDragMode = null;
+        let rangeDragStartX = 0;
+        let rangeDragStartValues = { start: 0, end: 0 };
+
         // --- Timeline Historical Data ---
         const worldPeriods = [
-            { name: "Early Antiquity", start: -3000, end: -800, color: "bg-slate-300" },
-            { name: "Classical Antiquity", start: -800, end: 476, color: "bg-stone-300" },
-            { name: "Middle Ages", start: 476, end: 1453, color: "bg-zinc-300" },
-            { name: "Renaissance", start: 1453, end: 1760, color: "bg-neutral-300" },
-            { name: "Industrial Era", start: 1760, end: 1914, color: "bg-slate-400" },
-            { name: "World Wars", start: 1914, end: 1945, color: "bg-stone-400" },
-            { name: "Cold War", start: 1947, end: 1991, color: "bg-zinc-400" },
-            { name: "Modern Era", start: 1991, end: 2050, color: "bg-gray-400" }
+            { name: "Classical Antiquity", start: 1, end: 476, hex: "#d97706" },
+            { name: "Middle Ages", start: 476, end: 1453, hex: "#7c3aed" },
+            { name: "Renaissance", start: 1453, end: 1760, hex: "#059669" },
+            { name: "Industrial Era", start: 1760, end: 1914, hex: "#2563eb" },
+            { name: "Modern Era", start: 1914, end: 2050, hex: "#0d9488" }
         ];
 
         const countryTimelines = {
@@ -340,58 +449,52 @@
             return null;
         }
 
+        function periodColorToHex(twClass) {
+            const palette = {
+                'bg-amber-100': '#f59e0b', 'bg-red-200': '#ef4444', 'bg-orange-200': '#f97316',
+                'bg-amber-200': '#f59e0b', 'bg-yellow-200': '#eab308', 'bg-lime-200': '#84cc16',
+                'bg-green-200': '#22c55e', 'bg-emerald-200': '#10b981', 'bg-teal-200': '#14b8a6',
+                'bg-cyan-200': '#06b6d4', 'bg-sky-200': '#0ea5e9', 'bg-blue-200': '#3b82f6',
+                'bg-indigo-200': '#6366f1', 'bg-violet-200': '#8b5cf6', 'bg-purple-200': '#a855f7',
+                'bg-fuchsia-200': '#d946ef', 'bg-pink-200': '#ec4899', 'bg-rose-200': '#f43f5e',
+                'bg-red-300': '#dc2626', 'bg-stone-300': '#78716c', 'bg-zinc-300': '#71717a',
+                'bg-neutral-300': '#737373', 'bg-slate-400': '#64748b', 'bg-stone-400': '#57534e',
+                'bg-zinc-400': '#52525b', 'bg-gray-400': '#6b7280', 'bg-amber-300': '#d97706',
+            };
+            return palette[twClass] || '#64748b';
+        }
+
+        function getPeriodHex(p) {
+            return p.hex || periodColorToHex(p.color);
+        }
+
         // DOM Elements
         const mapContainer = document.getElementById('map');
         const timelineContainer = document.getElementById('timelineContainer');
-        const yearSlider = document.getElementById('yearSlider');
-        const currentYearDisplay = document.getElementById('currentYearDisplay');
+        const timelineOuterWrap = document.getElementById('timelineOuterWrap');
+        const timelineSliderRow = document.getElementById('timelineSliderRow');
+        const timelineTrackWrap = document.getElementById('timelineTrackWrap');
+        const windowBracket = document.getElementById('windowBracket');
+        const rangeHandleLeft = document.getElementById('rangeHandleLeft');
+        const rangeHandleRight = document.getElementById('rangeHandleRight');
+        const rangeBody = document.getElementById('rangeBody');
+        const timelineDimLeft = document.getElementById('timelineDimLeft');
+        const timelineDimRight = document.getElementById('timelineDimRight');
+        const rangeInputGroup = document.getElementById('rangeInputGroup');
+        const rangeStartInput = document.getElementById('rangeStartInput');
+        const rangeEndInput = document.getElementById('rangeEndInput');
         const minYearLabel = document.getElementById('minYearLabel');
         const maxYearLabel = document.getElementById('maxYearLabel');
-        const windowBtn      = document.getElementById('windowBtn');
-        const windowBtnLabel = document.getElementById('windowBtnLabel');
-        const windowMenu     = document.getElementById('windowMenu');
-        let   selectedWindow = 50;
 
-        const windowOptions = [
-            { value: 0,   label: 'Exact Year'  },
-            { value: 10,  label: '± 10 Years'  },
-            { value: 50,  label: '± 50 Years'  },
-            { value: 100, label: '± 100 Years' },
-            { value: 500, label: '± 500 Years' },
-        ];
+        const playBtn = document.getElementById('playBtn');
+        const iconPlay = document.getElementById('iconPlay');
+        const iconPause = document.getElementById('iconPause');
 
-        function buildWindowMenu() {
-            windowMenu.innerHTML = '';
-            windowOptions.forEach(opt => {
-                const item = document.createElement('button');
-                item.type = 'button';
-                item.className = `w-full flex items-center px-3 py-2 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors text-left ${opt.value === selectedWindow ? 'bg-blue-50 text-blue-700 font-semibold' : ''}`;
-                item.textContent = opt.label;
-                item.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    selectedWindow = opt.value;
-                    windowBtnLabel.textContent = opt.label;
-                    windowMenu.classList.add('hidden');
-                    windowMenu.querySelectorAll('button').forEach(b => {
-                        const active = b === item;
-                        b.classList.toggle('bg-blue-50', active);
-                        b.classList.toggle('text-blue-700', active);
-                        b.classList.toggle('font-semibold', active);
-                    });
-                    updateVisualization();
-                });
-                windowMenu.appendChild(item);
-            });
-        }
-
-        // Teleport a menu to <body> and position it above its trigger button.
-        // This escapes any ancestor stacking context so the menu always renders on top.
         function openMenu(menu, btn) {
             if (menu.parentElement !== document.body) {
                 document.body.appendChild(menu);
                 menu.style.position = 'fixed';
                 menu.style.zIndex   = '99999';
-                // Remove layout-relative positioning classes that no longer apply
                 menu.classList.remove('absolute', 'bottom-full', 'mb-2', 'left-0');
             }
             const r = btn.getBoundingClientRect();
@@ -400,29 +503,21 @@
             menu.style.top    = '';
             menu.classList.remove('hidden');
         }
-
-        windowBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            buildWindowMenu();
-            const isOpen = !windowMenu.classList.contains('hidden');
-            categoryMenu.classList.add('hidden');
-            if (isOpen) { windowMenu.classList.add('hidden'); } else { openMenu(windowMenu, windowBtn); }
-        });
-        document.addEventListener('click', () => { windowMenu.classList.add('hidden'); });
-        const playBtn = document.getElementById('playBtn');
-        const iconPlay = document.getElementById('iconPlay');
-        const iconPause = document.getElementById('iconPause');
         
         const mainSidebar = document.getElementById('mainSidebar');
-        const eventsList = document.getElementById('eventsList');
+        const eventsRows = document.getElementById('eventsRows');
         const eventCount = document.getElementById('eventCount');
+        const eventsColumnTitle = document.getElementById('eventsColumnTitle');
+        const eventsColumnCount = document.getElementById('eventsColumnCount');
+        const mapSelectionHint = document.getElementById('mapSelectionHint');
+        const compareCountryLabel = document.getElementById('compareCountryLabel');
+        const compareStatusContainer = document.getElementById('compareStatusContainer');
+        const compareStatusLabel = document.getElementById('compareStatusLabel');
+        const clearCompareBtn = document.getElementById('clearCompareBtn');
         
         const loadingOverlay = document.getElementById('loadingOverlay');
         const spikesContainer = document.getElementById('spikesContainer');
-        const connectingDotsContainer = document.getElementById('connectingDotsContainer');
         
-        const chinaOnlyToggle = document.getElementById('chinaOnlyToggle');
-        const parallelToggle = document.getElementById('parallelToggle');
         const categoryBtn      = document.getElementById('categoryBtn');
         const categoryBtnEmoji = document.getElementById('categoryBtnEmoji');
         const categoryBtnLabel = document.getElementById('categoryBtnLabel');
@@ -441,17 +536,11 @@
         categoryBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             const isOpen = !categoryMenu.classList.contains('hidden');
-            windowMenu.classList.add('hidden');
             if (isOpen) { categoryMenu.classList.add('hidden'); } else { openMenu(categoryMenu, categoryBtn); }
         });
         document.addEventListener('click', () => {
             categoryMenu.classList.add('hidden');
-            windowMenu.classList.add('hidden');
         });
-        
-        const countryFilterContainer = document.getElementById('countryFilterContainer');
-        const activeCountryLabel = document.getElementById('activeCountryLabel');
-        const clearCountryBtn = document.getElementById('clearCountryBtn');
         
         const wikiPanel = document.getElementById('wikiPanel');
         const wikiContent = document.getElementById('wikiContent');
@@ -460,11 +549,87 @@
         let wikiDebounceTimer = null;
         let isWikiClosedByUser = false;
 
-        // Parallel View Elements
-        const parallelView = document.getElementById('parallelView');
-        const parallelLeftCount  = document.getElementById('parallelLeftCount');
-        const parallelRightCount = document.getElementById('parallelRightCount');
-        const parallelRightTitle = document.getElementById('parallelRightTitle');
+        // Parallel view removed — multi-column sidebar replaces it
+
+        function formatCountryLabel(countryKey) {
+            if (!countryKey) return '';
+            const k = countryKey.toLowerCase();
+            if (k.includes('china')) return 'China';
+            if (k === 'usa' || k.includes('united states') || k.includes('america')) return 'United States';
+            if (k === 'uk' || k.includes('united kingdom') || k.includes('britain')) return 'United Kingdom';
+            if (k.includes('india')) return 'India';
+            if (k.includes('japan')) return 'Japan';
+            if (k.includes('france')) return 'France';
+            if (k.includes('germany')) return 'Germany';
+            if (k.includes('russia') || k.includes('soviet')) return 'Russia';
+            if (k.includes('pakistan')) return 'Pakistan';
+            if (k.includes('bangladesh')) return 'Bangladesh';
+            return countryKey.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }
+
+        function isChinaKey(countryKey) {
+            return countryKey && countryKey.toLowerCase().includes('china');
+        }
+
+        function eventInvolvesBoth(ev, countryKey) {
+            return hasChina(ev) && eventMatchesCountry(ev, countryKey);
+        }
+
+        function findNearestCountry(clickLat, clickLng) {
+            let nearest = null;
+            let minDist = Infinity;
+            const seenCoords = new Set();
+            for (const [name, coords] of Object.entries(countryCoordinates)) {
+                const key = `${coords[0]},${coords[1]}`;
+                if (seenCoords.has(key)) continue;
+                seenCoords.add(key);
+                const dlat = coords[0] - clickLat;
+                let dlng = coords[1] - clickLng;
+                if (dlng > 180) dlng -= 360;
+                if (dlng < -180) dlng += 360;
+                const dist = dlat * dlat + dlng * dlng;
+                if (dist < minDist) { minDist = dist; nearest = name; }
+            }
+            return nearest;
+        }
+
+        function clearCompareCountry() {
+            compareCountryKey = null;
+            lastCompareKey = '';
+            updateCompareUI();
+            updateVisualization();
+        }
+
+        function handleCountryMapClick(countryKey) {
+            if (!countryKey || isChinaKey(countryKey)) return;
+            const key = countryKey.toLowerCase();
+            compareCountryKey = (compareCountryKey === key) ? null : key;
+            updateCompareUI();
+            updateVisualization();
+        }
+
+        function updateCompareUI() {
+            if (!compareCountryKey) {
+                compareStatusContainer.classList.add('hidden');
+                compareStatusContainer.classList.remove('flex');
+                mapSelectionHint.classList.add('hidden');
+                eventsColumnTitle.textContent = '🇨🇳 CHINA · 🌍 WORLD';
+            } else {
+                const label = formatCountryLabel(compareCountryKey);
+                compareStatusContainer.classList.remove('hidden');
+                compareStatusContainer.classList.add('flex');
+                compareStatusLabel.textContent = `Compare: China ↔ ${label} (linked events only)`;
+                compareCountryLabel.textContent = label;
+                mapSelectionHint.classList.remove('hidden');
+                eventsColumnTitle.textContent = `China – ${label}`;
+            }
+        }
+
+        clearCompareBtn.addEventListener('click', clearCompareCountry);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && compareCountryKey) clearCompareCountry();
+        });
 
         // Initialize Map
         function initMap() {
@@ -474,55 +639,16 @@
                 subdomains: 'abcd',
                 maxZoom: 19
             }).addTo(map);
-            activeLinesLayer = L.layerGroup().addTo(map); 
-            markersLayer = L.layerGroup().addTo(map); 
+            activeLinesLayer = L.layerGroup().addTo(map);
+            markersLayer = L.layerGroup().addTo(map);
+            countryDotsLayer = L.layerGroup().addTo(map);
 
             map.on('click', function(e) {
                 if (!Object.keys(countryCoordinates).length) return;
-
-                const clickLat = e.latlng.lat;
-                const clickLng = e.latlng.lng;
-                let nearest = null;
-                let minDist = Infinity;
-                const seenCoords = new Set();
-
-                for (const [name, coords] of Object.entries(countryCoordinates)) {
-                    // Skip duplicate coordinates — keeps common name over official name (inserted first)
-                    const key = `${coords[0]},${coords[1]}`;
-                    if (seenCoords.has(key)) continue;
-                    seenCoords.add(key);
-
-                    const dlat = coords[0] - clickLat;
-                    let dlng = coords[1] - clickLng;
-                    if (dlng > 180) dlng -= 360;
-                    if (dlng < -180) dlng += 360;
-                    const dist = dlat * dlat + dlng * dlng;
-                    if (dist < minDist) { minDist = dist; nearest = name; }
-                }
-
-                if (nearest) setGlobalSelectedCountry(nearest);
+                const nearest = findNearestCountry(e.latlng.lat, e.latlng.lng);
+                if (nearest) handleCountryMapClick(nearest);
             });
         }
-
-        // Sets Country Filter and triggers updates if changed
-        function setGlobalSelectedCountry(countryName) {
-            if (selectedCountry === countryName) return; // Prevent unnecessary list resets
-            selectedCountry = countryName;
-            
-            if (countryName) {
-                countryFilterContainer.classList.remove('hidden');
-                countryFilterContainer.classList.add('flex');
-                activeCountryLabel.textContent = countryName.toUpperCase();
-                chinaOnlyToggle.disabled = true; 
-            } else {
-                countryFilterContainer.classList.add('hidden');
-                countryFilterContainer.classList.remove('flex');
-                chinaOnlyToggle.disabled = false;
-            }
-            updateTimelineBounds(); 
-        }
-        
-        clearCountryBtn.addEventListener('click', () => { setGlobalSelectedCountry(null); });
 
         async function loadCountryCoordinates() {
             loadingOverlay.classList.remove('hidden');
@@ -539,6 +665,7 @@
                 });
 
                 const overrides = {
+                    "china": [35.8617, 104.1954],
                     "usa": [37.0902, -95.7129], "uk": [55.3781, -3.4360], "england": [52.3555, -1.1743],
                     "scotland": [56.4907, -4.2026], "soviet union": [61.5240, 105.3188], "ussr": [61.5240, 105.3188],
                     "ottoman empire": [39.9334, 32.8597], "prussia": [52.5200, 13.4050], "india/pakistan": [28.0, 72.0],
@@ -553,7 +680,7 @@
             }
         }
 
-        function formatYear(year) { return (year < 0) ? `${Math.abs(year)} BC` : `${year} AD`; }
+        function formatYear(year) { return `${year}`; }
 
         function cleanField(v) {
             const s = String(v || '').trim();
@@ -638,38 +765,25 @@
 
         // Intelligent scroll logic to find specific events when markers or other lists are clicked
         function scrollToEvent(eventId) {
-            // Short timeout ensures DOM has rendered if a filter change triggered a list rebuild
             setTimeout(() => {
-                const isParallelMode = parallelToggle.checked;
-                let targetEl = null;
-
-                if (isParallelMode) {
-                    targetEl = document.getElementById(`parallel-left-${eventId}`) || document.getElementById(`parallel-right-${eventId}`);
-                } else {
-                    targetEl = document.getElementById(`list-item-${eventId}`);
-                }
-
+                const targetEl = document.getElementById(`list-item-${eventId}`);
                 if (targetEl) {
                     targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    
-                    // Flash effect to highlight the element
                     targetEl.classList.add('ring-4', 'ring-blue-400', 'scale-[1.02]', 'z-10');
                     setTimeout(() => {
                         targetEl.classList.remove('ring-4', 'ring-blue-400', 'scale-[1.02]', 'z-10');
                     }, 1500);
                 }
-            }, 100); 
+            }, 100);
         }
 
-        // Draw a quadratic-bezier curved dashed arc between two lat/lng points
-        function curvedArc(p1, p2, opts) {
-            const steps = 60;
+        // Build quadratic-bezier arc points between two lat/lng points
+        function curvedArcPoints(p1, p2, steps = 80) {
             const midLat = (p1[0] + p2[0]) / 2;
             const midLng = (p1[1] + p2[1]) / 2;
             const dLat   = p2[0] - p1[0];
             const dLng   = p2[1] - p1[1];
             const dist   = Math.sqrt(dLat * dLat + dLng * dLng) || 1;
-            // Perpendicular unit vector — bows the line away from the straight path
             const curvature = dist * 0.3;
             const ctrlLat = midLat + (-dLng / dist) * curvature;
             const ctrlLng = midLng + ( dLat / dist) * curvature;
@@ -681,7 +795,186 @@
                     (1-t)*(1-t)*p1[1] + 2*(1-t)*t*ctrlLng + t*t*p2[1]
                 ]);
             }
-            return L.polyline(pts, opts);
+            return pts;
+        }
+
+        function curvedArc(p1, p2, opts) {
+            return L.polyline(curvedArcPoints(p1, p2, 60), opts);
+        }
+
+        let lineGrowFrameId = null;
+        let lineGrowArrowMarker = null;
+
+        function cancelLineGrowAnimation() {
+            if (lineGrowFrameId !== null) {
+                cancelAnimationFrame(lineGrowFrameId);
+                lineGrowFrameId = null;
+            }
+            if (lineGrowArrowMarker && activeLinesLayer) {
+                activeLinesLayer.removeLayer(lineGrowArrowMarker);
+                lineGrowArrowMarker = null;
+            }
+        }
+
+        function computeBearing(from, to) {
+            const toRad = Math.PI / 180;
+            const lat1 = from[0] * toRad;
+            const lat2 = to[0] * toRad;
+            const dLon = (to[1] - from[1]) * toRad;
+            const y = Math.sin(dLon) * Math.cos(lat2);
+            const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+            return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+        }
+
+        function tipBearing(pts, endIdx) {
+            const tip = pts[endIdx];
+            let prevIdx = Math.max(0, endIdx - 1);
+            if (prevIdx >= endIdx) prevIdx = Math.max(0, endIdx - 2);
+            const prev = pts[prevIdx];
+            if (prev[0] === tip[0] && prev[1] === tip[1] && endIdx > 1) {
+                return computeBearing(pts[endIdx - 2], tip);
+            }
+            return computeBearing(prev, tip);
+        }
+
+        function buildRouteArrowIcon(color, bearingDeg) {
+            return L.divIcon({
+                className: 'route-arrow-wrap',
+                html: `<svg width="20" height="20" viewBox="0 0 20 20" style="transform:rotate(${bearingDeg}deg);overflow:visible"><path d="M10 1 L18 17 L10 13 L2 17 Z" fill="${color}" stroke="white" stroke-width="0.75" stroke-linejoin="round"/></svg>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+        }
+
+        function updateRouteArrow(marker, latlng, color, bearingDeg) {
+            marker.setLatLng(latlng);
+            marker.setIcon(buildRouteArrowIcon(color, bearingDeg));
+        }
+
+        const ROUTE_GROW_MS = 2800;
+
+        function drawGrowingLine(from, to, color) {
+            cancelLineGrowAnimation();
+            const pts = curvedArcPoints(from, to, 90);
+            const line = L.polyline([pts[0]], {
+                color,
+                weight: 3,
+                opacity: 0.9,
+                dashArray: '12, 8',
+                lineCap: 'round',
+                lineJoin: 'round'
+            });
+            line.addTo(activeLinesLayer);
+
+            const start = performance.now();
+            function tick(now) {
+                const t = Math.min(1, (now - start) / ROUTE_GROW_MS);
+                const eased = 1 - Math.pow(1 - t, 2.2);
+                const endIdx = Math.max(1, Math.round(eased * (pts.length - 1)));
+                line.setLatLngs(pts.slice(0, endIdx + 1));
+
+                const tip = pts[endIdx];
+                const bearing = tipBearing(pts, endIdx);
+                if (!lineGrowArrowMarker) {
+                    lineGrowArrowMarker = L.marker(tip, {
+                        icon: buildRouteArrowIcon(color, bearing),
+                        interactive: false,
+                        zIndexOffset: 600
+                    });
+                    lineGrowArrowMarker.addTo(activeLinesLayer);
+                } else {
+                    updateRouteArrow(lineGrowArrowMarker, tip, color, bearing);
+                }
+
+                if (t < 1) {
+                    lineGrowFrameId = requestAnimationFrame(tick);
+                } else {
+                    line.setLatLngs(pts);
+                    updateRouteArrow(lineGrowArrowMarker, pts[pts.length - 1], color, tipBearing(pts, pts.length - 1));
+                    const pathEl = line.getElement();
+                    if (pathEl) pathEl.classList.add('animated-route');
+                    lineGrowFrameId = null;
+                }
+            }
+            lineGrowFrameId = requestAnimationFrame(tick);
+        }
+
+        function getEventInitiatorDirection(ev, compareCountryKey) {
+            if (!compareCountryKey) return null;
+
+            const involvesChina = hasChina(ev);
+            const involvesOther = eventMatchesCountry(ev, compareCountryKey);
+
+            if (involvesChina && !involvesOther) return 'china-to-other';
+            if (involvesOther && !involvesChina) return 'other-to-china';
+
+            const region = String(ev.region || '').toLowerCase();
+            if (region.includes('china') && !eventMatchesCountry({ region: ev.region, allCountries: [] }, compareCountryKey)) {
+                return 'china-to-other';
+            }
+            if (eventMatchesCountry({ region: ev.region, allCountries: [ev.region] }, compareCountryKey) && !region.includes('china')) {
+                return 'other-to-china';
+            }
+
+            const countries = (ev.allCountries && ev.allCountries.length) ? ev.allCountries : [ev.region];
+            for (const c of countries) {
+                if (!c) continue;
+                const cl = String(c).toLowerCase();
+                if (cl.includes('china')) return 'china-to-other';
+                if (eventMatchesCountry({ region: c, allCountries: [c] }, compareCountryKey)) return 'other-to-china';
+            }
+
+            const title = ev.title.toLowerCase();
+            const chinaHints = ['chinese', 'china', 'ming', 'qing', 'tang', 'song', 'han ', 'prc', 'beijing', 'ccp'];
+            if (chinaHints.some(k => title.includes(k))) return 'china-to-other';
+
+            const otherHints = [compareCountryKey.toLowerCase(), formatCountryLabel(compareCountryKey).toLowerCase()];
+            if (otherHints.some(k => k && title.includes(k))) return 'other-to-china';
+
+            return 'bidirectional';
+        }
+
+        function drawDirectionalEventArc(ev, compareCountryKey) {
+            const chinaCoords = getCoordinates(CHINA_COORDS_KEY, null);
+            const otherCoords = getCoordinates(compareCountryKey, null);
+            if (!chinaCoords || !otherCoords) return;
+
+            const dir = getEventInitiatorDirection(ev, compareCountryKey);
+            let from, to, color;
+            if (dir === 'other-to-china') {
+                from = otherCoords; to = chinaCoords; color = '#2563eb';
+            } else if (dir === 'china-to-other') {
+                from = chinaCoords; to = otherCoords; color = '#dc2626';
+            } else {
+                from = chinaCoords; to = otherCoords; color = '#6366f1';
+            }
+
+            drawGrowingLine(from, to, color);
+        }
+
+        function refreshMapLines(selectedEv = null) {
+            cancelLineGrowAnimation();
+            activeLinesLayer.clearLayers();
+            if (!compareCountryKey) return;
+
+            const chinaCoords = getCoordinates(CHINA_COORDS_KEY, null);
+            const otherCoords = getCoordinates(compareCountryKey, null);
+            if (!chinaCoords || !otherCoords) return;
+
+            if (selectedEv) {
+                drawDirectionalEventArc(selectedEv, compareCountryKey);
+            } else {
+                drawGrowingLine(chinaCoords, otherCoords, '#6366f1');
+            }
+        }
+
+        function flyToCompareCountries(keyChanged) {
+            if (!compareCountryKey || !keyChanged) return;
+            const chinaCoords = getCoordinates(CHINA_COORDS_KEY, null);
+            const otherCoords = getCoordinates(compareCountryKey, null);
+            if (chinaCoords && otherCoords) {
+                map.flyToBounds(L.latLngBounds([chinaCoords, otherCoords]), { padding: [70, 70], maxZoom: 4, duration: 0.8 });
+            }
         }
 
         function drawEventLines(ev, targetLayer) {
@@ -749,9 +1042,37 @@
             }
         }
 
-        // Load into right-side Panel (Map Mode)
+        function hideWikiPanel() {
+            wikiPanel.classList.add('hidden');
+            wikiPanel.classList.remove('flex');
+            currentWikiQuery = null;
+            selectedEventId = null;
+            refreshMapLines();
+            setTimeout(() => { if (map) map.invalidateSize(); }, 300);
+        }
+
+        function highlightSelectedEvent() {
+            document.querySelectorAll('.event-card').forEach(el => {
+                const isSelected = selectedEventId && el.id === `list-item-${selectedEventId}`;
+                el.classList.toggle('ring-2', isSelected);
+                el.classList.toggle('ring-blue-500', isSelected);
+                el.classList.toggle('border-blue-400', isSelected);
+                el.classList.toggle('selected', isSelected);
+            });
+        }
+
+        function selectEvent(ev) {
+            selectedEventId = ev.id;
+            isWikiClosedByUser = false;
+            clearTimeout(wikiDebounceTimer);
+            loadWikipediaSummary(ev);
+            highlightSelectedEvent();
+            refreshMapLines(ev);
+        }
+
+        // Load into right-side Panel (Map Mode) — only when user selects an event
         async function loadWikipediaSummary(ev) {
-            if (isWikiClosedByUser || ev.title === currentWikiQuery) return;
+            if (isWikiClosedByUser) return;
             currentWikiQuery = ev.title;
 
             wikiPanel.classList.remove('hidden');
@@ -786,29 +1107,6 @@
                 else wikiImg.addEventListener('load', applyPortraitCap, { once: true });
             }
         }
-
-        // Thumbnail Observer for Parallel Mode
-        const thumbObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const imgEl = entry.target;
-                    const evTitle = imgEl.dataset.title;
-                    const evWiki = imgEl.dataset.wiki;
-                    
-                    fetchWikiData({ title: evTitle, wikiUrl: evWiki }).then(data => {
-                        if (data && data.thumbnail) {
-                            imgEl.src = data.thumbnail;
-                            imgEl.classList.remove('opacity-0');
-                            const placeholder = imgEl.parentElement.querySelector('.placeholder-icon');
-                            if (placeholder) placeholder.style.display = 'none';
-                        }
-                    });
-                    observer.unobserve(imgEl);
-                }
-            });
-        }, { rootMargin: "100px" });
-
-
 
         // Process Parsed Data
         function processData(data) {
@@ -846,7 +1144,7 @@
                 
                 const numYear = parseYear(rawYear);
                 
-                if (numYear !== null) {
+                if (numYear !== null && numYear >= AD_MIN_YEAR) {
                     const countries = [];
                     const coordsList = [];
                     
@@ -925,21 +1223,128 @@
             });
 
             eventsData.sort((a, b) => a.numYear - b.numYear);
-            globalMinYear = Math.min(...validYears);
+            globalMinYear = Math.max(AD_MIN_YEAR, Math.min(...validYears));
             globalMaxYear = Math.max(...validYears);
             minYear = globalMinYear; maxYear = globalMaxYear;
-            yearSlider.value = minYear; 
+
+            rangeStartYear = globalMinYear;
+            rangeEndYear = globalMaxYear;
+            selectedEventId = null;
+            isWikiClosedByUser = false;
+            hideWikiPanel();
             
-            yearSlider.disabled = false; playBtn.disabled = false; chinaOnlyToggle.disabled = false; categoryBtn.disabled = false; parallelToggle.disabled = false;
+            playBtn.disabled = false; categoryBtn.disabled = false;
+            compareCountryKey = null;
+            lastCompareKey = '';
+            updateCompareUI();
+            rangeStartInput.disabled = false;
+            rangeEndInput.disabled = false;
             updateTimelineBounds();
         }
 
+        function syncRangeInputs() {
+            if (document.activeElement === rangeStartInput || document.activeElement === rangeEndInput) return;
+            rangeStartInput.value = rangeStartYear;
+            rangeEndInput.value = rangeEndYear;
+            rangeStartInput.min = globalMinYear;
+            rangeStartInput.max = globalMaxYear - MIN_RANGE_SPAN;
+            rangeEndInput.min = globalMinYear + MIN_RANGE_SPAN;
+            rangeEndInput.max = globalMaxYear;
+        }
+
+        function ensureViewportContainsRange() {
+            if (rangeStartYear >= minYear && rangeEndYear <= maxYear) return false;
+
+            const targetSpan = rangeEndYear - rangeStartYear;
+            const pad = Math.max(10, Math.floor(targetSpan * 0.08));
+            minYear = Math.max(globalMinYear, rangeStartYear - pad);
+            maxYear = Math.min(globalMaxYear, rangeEndYear + pad);
+            if (maxYear - minYear < targetSpan) {
+                maxYear = Math.min(globalMaxYear, rangeStartYear + targetSpan + pad);
+                minYear = Math.max(globalMinYear, maxYear - targetSpan - pad);
+            }
+            return true;
+        }
+
+        function applyRangeFromInputs() {
+            if (!eventsData.length) return;
+
+            let start = parseInt(rangeStartInput.value, 10);
+            let end = parseInt(rangeEndInput.value, 10);
+            if (isNaN(start) || isNaN(end)) {
+                syncRangeInputs();
+                return;
+            }
+            if (start > end) [start, end] = [end, start];
+
+            start = Math.max(globalMinYear, Math.min(start, globalMaxYear - MIN_RANGE_SPAN));
+            end = Math.max(start + MIN_RANGE_SPAN, Math.min(end, globalMaxYear));
+
+            rangeStartYear = start;
+            rangeEndYear = end;
+
+            const viewportChanged = ensureViewportContainsRange();
+            if (viewportChanged) {
+                updateTimelineBounds();
+            } else {
+                updateRangeSelectionUI();
+                updateVisualization();
+            }
+        }
+
+        function clampRangeSelection() {
+            rangeStartYear = Math.max(globalMinYear, Math.min(rangeStartYear, globalMaxYear - MIN_RANGE_SPAN));
+            rangeEndYear = Math.max(rangeStartYear + MIN_RANGE_SPAN, Math.min(rangeEndYear, globalMaxYear));
+        }
+
+        function yearAtClientX(clientX) {
+            const rect = timelineContainer.getBoundingClientRect();
+            const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+            return Math.round(minYear + (maxYear - minYear) * pct);
+        }
+
+        function deltaYearsFromDrag(clientX) {
+            const rect = timelineContainer.getBoundingClientRect();
+            const yearsPerPixel = (maxYear - minYear) / rect.width;
+            return Math.round((clientX - rangeDragStartX) * yearsPerPixel);
+        }
+
+        function updateTimelineHighlight(leftPct, rightPct) {
+            if (timelineDimLeft) timelineDimLeft.style.width = `${leftPct}%`;
+            if (timelineDimRight) {
+                timelineDimRight.style.left = `${rightPct}%`;
+                timelineDimRight.style.width = `${100 - rightPct}%`;
+            }
+
+            spikesContainer.querySelectorAll('[data-year]').forEach(spike => {
+                const y = parseInt(spike.dataset.year, 10);
+                const inSel = y >= rangeStartYear && y <= rangeEndYear;
+                spike.style.opacity = inSel ? '1' : '0.18';
+                spike.style.height = inSel ? '16px' : '10px';
+                spike.style.top = inSel ? '-8px' : '-5px';
+            });
+        }
+
+        function updateRangeSelectionUI() {
+            if (!windowBracket || maxYear === minYear) return;
+            clampRangeSelection();
+
+            const range = maxYear - minYear;
+            const leftPct  = Math.max(0, ((rangeStartYear - minYear) / range) * 100);
+            const rightPct = Math.min(100, ((rangeEndYear - minYear) / range) * 100);
+
+            windowBracket.style.left = `${leftPct}%`;
+            windowBracket.style.width = `${Math.max(0.5, rightPct - leftPct)}%`;
+            windowBracket.classList.remove('hidden');
+
+            updateTimelineHighlight(leftPct, rightPct);
+            syncRangeInputs();
+        }
+
         function updateTimelineBounds() {
-            yearSlider.min = minYear;
-            yearSlider.max = maxYear;
-            let currentVal = parseInt(yearSlider.value, 10);
-            if (currentVal < minYear) yearSlider.value = minYear;
-            if (currentVal > maxYear) yearSlider.value = maxYear;
+            minYear = Math.max(AD_MIN_YEAR, minYear);
+            globalMinYear = Math.max(AD_MIN_YEAR, globalMinYear);
+            clampRangeSelection();
             
             minYearLabel.textContent = formatYear(minYear);
             maxYearLabel.textContent = formatYear(maxYear);
@@ -947,62 +1352,94 @@
             renderTimelineBands();
             drawSpikes();
             renderYearAxis();
+            updateRangeSelectionUI();
             updateVisualization();
         }
 
-        // Render Dynasty/World/Country color blocks
+        // Render historical period labels + colored divider line above the track
         function renderTimelineBands() {
-            const tTrack = document.getElementById('topTrack');
-            const bTrack = document.getElementById('bottomTrack');
-            const tTrackLabel = document.getElementById('topTrackLabel');
-            const bTrackLabel = document.getElementById('bottomTrackLabel');
-            tTrack.innerHTML = ''; bTrack.innerHTML = '';
+            const labelsEl = document.getElementById('periodLabels');
+            const colorBarEl = document.getElementById('periodColorBar');
+            const track = document.getElementById('mainTrack');
+            if (track) track.innerHTML = '';
+            if (labelsEl) labelsEl.innerHTML = '';
+            if (colorBarEl) colorBarEl.innerHTML = '';
 
             if (maxYear === minYear) return;
             const range = maxYear - minYear;
 
-            const renderTrack = (periods, trackEl) => {
-                if(!periods) return;
+            const renderPeriods = (periods, labelsContainer, barContainer) => {
+                if (!periods) return;
                 periods.forEach(p => {
                     if (p.end < minYear || p.start > maxYear) return;
-                    let s = Math.max(minYear, p.start);
+                    let s = Math.max(minYear, Math.max(p.start, AD_MIN_YEAR));
                     let e = Math.min(maxYear, p.end);
+                    if (e < s) return;
                     let startPct = ((s - minYear) / range) * 100;
                     let widthPct = ((e - s) / range) * 100;
-                    
-                    let div = document.createElement('div');
-                    div.className = `absolute h-full flex items-center justify-center border-r border-white/40 overflow-hidden text-[9px] font-bold text-slate-800/80 select-none ${p.color}`;
-                    div.style.left = `${startPct}%`; div.style.width = `${widthPct}%`;
-                    if (widthPct > 4.5) div.textContent = p.name;
-                    div.title = `${p.name} (${formatYear(p.start)} - ${formatYear(p.end)})`;
-                    trackEl.appendChild(div);
+                    const title = `${p.name} (${formatYear(s)} - ${formatYear(e)})`;
+
+                    if (barContainer) {
+                        const seg = document.createElement('div');
+                        seg.className = 'period-color-seg';
+                        seg.style.backgroundColor = getPeriodHex(p);
+                        seg.style.left = `${startPct}%`;
+                        seg.style.width = `${widthPct}%`;
+                        seg.title = title;
+                        barContainer.appendChild(seg);
+                    }
+
+                    if (labelsContainer && widthPct > 2) {
+                        const labelWrap = document.createElement('div');
+                        labelWrap.className = 'period-label-wrap absolute top-0 h-full flex items-start justify-center px-0.5';
+                        labelWrap.style.left = `${startPct}%`;
+                        labelWrap.style.width = `${widthPct}%`;
+
+                        const row = document.createElement('div');
+                        row.className = 'period-label-row';
+                        row.title = title;
+
+                        const swatch = document.createElement('span');
+                        swatch.className = 'period-color-swatch';
+                        swatch.style.backgroundColor = getPeriodHex(p);
+                        swatch.setAttribute('aria-hidden', 'true');
+
+                        const text = document.createElement('span');
+                        text.className = 'period-label-text text-[11px] font-bold text-slate-800 leading-tight';
+                        text.textContent = p.name;
+
+                        row.appendChild(swatch);
+                        row.appendChild(text);
+                        labelWrap.appendChild(row);
+                        labelsContainer.appendChild(labelWrap);
+                    }
                 });
             };
 
-            // Top Track is ALWAYS China
-            let topPeriods = countryTimelines['china']; 
-            tTrackLabel.textContent = "CHINA";
-            
-            // Bottom Track is Selected Country OR World
-            let bottomPeriods = worldPeriods;
-            bTrackLabel.textContent = "WORLD";
-            
-            if (selectedCountry) {
-                const specPeriods = getCountryTimeline(selectedCountry);
+            let periods = worldPeriods;
+            let modeLabel = 'WORLD';
+
+            if (compareCountryKey) {
+                const specPeriods = getCountryTimeline(compareCountryKey);
                 if (specPeriods) {
-                    bottomPeriods = specPeriods;
-                    bTrackLabel.textContent = selectedCountry.toUpperCase();
+                    periods = specPeriods;
+                    modeLabel = 'CHINA ↔ ' + formatCountryLabel(compareCountryKey).toUpperCase();
                 } else {
-                    bottomPeriods = [];
-                    bTrackLabel.textContent = selectedCountry.toUpperCase() + " (NO TIMELINE DATA)";
+                    modeLabel = 'CHINA ↔ ' + formatCountryLabel(compareCountryKey).toUpperCase();
                 }
             }
 
-            renderTrack(topPeriods, tTrack);
-            renderTrack(bottomPeriods, bTrack);
+            if (labelsEl) {
+                const modeTag = document.createElement('span');
+                modeTag.className = 'absolute left-0 top-0 text-[10px] text-slate-500 font-bold bg-white/90 px-1.5 py-0.5 rounded-sm z-[1]';
+                modeTag.textContent = modeLabel;
+                labelsEl.appendChild(modeTag);
+            }
+
+            renderPeriods(periods, labelsEl, colorBarEl);
         }
 
-        // Render year tick-mark axis below the two timeline tracks
+        // Render year tick-mark axis below the timeline track
         function renderYearAxis() {
             const axisEl = document.getElementById('yearAxis');
             if (!axisEl || maxYear === minYear) return;
@@ -1021,7 +1458,7 @@
             interval = Math.max(1, Math.round(interval));
 
             const frag = document.createDocumentFragment();
-            const firstTick = Math.ceil(minYear / interval) * interval;
+            const firstTick = Math.max(AD_MIN_YEAR, Math.ceil(minYear / interval) * interval);
 
             for (let year = firstTick; year <= maxYear; year += interval) {
                 const pct = ((year - minYear) / range) * 100;
@@ -1033,11 +1470,11 @@
                 tick.className = 'absolute top-0 flex flex-col items-center';
 
                 const line = document.createElement('div');
-                line.className = 'w-px h-1.5 bg-slate-400';
+                line.className = 'w-px h-2 bg-slate-400';
 
                 const lbl = document.createElement('span');
-                lbl.className = 'text-[8px] text-slate-500 font-medium whitespace-nowrap mt-0.5';
-                lbl.textContent = year < 0 ? `${Math.abs(year)} BC` : `${year}`;
+                lbl.className = 'text-[11px] text-slate-600 font-semibold whitespace-nowrap mt-0.5';
+                lbl.textContent = `${year}`;
 
                 tick.appendChild(line);
                 tick.appendChild(lbl);
@@ -1047,355 +1484,351 @@
             axisEl.appendChild(frag);
         }
 
-        // Draw spikes and cross-track connecting dots
+        // Draw event spikes on the single timeline track
         function drawSpikes() {
             spikesContainer.innerHTML = '';
-            connectingDotsContainer.innerHTML = '';
             if (maxYear === minYear) return;
 
             const selectedCat = selectedCategory;
             const spikeFrag = document.createDocumentFragment();
-            const dotFrag = document.createDocumentFragment();
 
             eventsData.forEach(ev => {
                 if (selectedCat !== 'All' && ev.category !== selectedCat) return;
-
-                const isChina = hasChina(ev);
-
-                // Determine if this event also belongs to the bottom track
-                let isBottomTrack = false;
-                if (selectedCountry) {
-                    isBottomTrack = eventMatchesCountry(ev, selectedCountry);
-                } else {
-                    // World track: event connects bottom if it has any non-China country
-                    isBottomTrack = ev.allCountries && ev.allCountries.some(c => !c.toLowerCase().includes('china'));
-                }
-
-                if (!isChina) {
-                    if (selectedCountry) {
-                        if (!eventMatchesCountry(ev, selectedCountry)) return;
-                    } else if (chinaOnlyToggle.checked) {
-                        return;
-                    }
-                }
+                if (ev.numYear < AD_MIN_YEAR) return;
 
                 const percent = ((ev.numYear - minYear) / (maxYear - minYear)) * 100;
                 const spike = document.createElement('div');
                 spike.style.left = `${percent}%`;
-
-                if (isChina) {
-                    spike.className = 'absolute w-[2px] bg-red-500 rounded-t-sm z-10';
-                    spike.style.top = '-6px';
-                    spike.style.height = '12px';
-                } else {
-                    spike.className = 'absolute w-[2px] bg-slate-500 rounded-b-sm z-10';
-                    spike.style.bottom = '-6px';
-                    spike.style.height = '12px';
-                }
+                spike.dataset.year = ev.numYear;
+                spike.className = 'absolute w-[2px] bg-blue-500 rounded-t-sm z-10';
+                spike.style.top = '-8px';
+                spike.style.height = '14px';
+                spike.title = `${ev.title} (${ev.rawYear})`;
                 spikeFrag.appendChild(spike);
-
-                // Add a connecting dot when event spans BOTH the top (China) and bottom tracks
-                if (isChina && isBottomTrack) {
-                    const dot = document.createElement('div');
-                    dot.style.left = `${percent}%`;
-                    dot.style.top = '50%';
-                    dot.style.transform = 'translate(-50%, -50%)';
-                    dot.style.pointerEvents = 'auto';
-                    dot.className = 'absolute w-2.5 h-2.5 bg-violet-600 rounded-full cursor-pointer border-2 border-white shadow-md hover:scale-150 transition-transform';
-                    dot.title = `⬛ ${ev.title} (${ev.rawYear}) — spans both timelines`;
-                    dot.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        clearTimeout(wikiDebounceTimer);
-                        isWikiClosedByUser = false;
-                        loadWikipediaSummary(ev);
-                        activeLinesLayer.clearLayers();
-                        drawEventLines(ev, activeLinesLayer);
-                        if (ev.allCoords && ev.allCoords.length > 1) {
-                            map.flyToBounds(L.latLngBounds(ev.allCoords), { padding: [50, 50], maxZoom: 5 });
-                        } else if (ev.latlng) {
-                            map.flyTo(ev.latlng, 5);
-                        }
-                        scrollToEvent(ev.id);
-                    });
-                    dotFrag.appendChild(dot);
-                }
             });
 
             spikesContainer.appendChild(spikeFrag);
-            connectingDotsContainer.appendChild(dotFrag);
         }
 
         function escapeHtml(unsafe) {
             return (unsafe||'').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // Render List logic for Parallel View
-        // Build a single event card for the parallel view
-        function buildParallelCard(ev, prefix) {
+        function collectCountriesWithEvents(events) {
+            const map = new Map();
+            events.forEach(ev => {
+                const countries = (ev.allCountries && ev.allCountries.length) ? ev.allCountries : [ev.region];
+                countries.forEach(c => {
+                    if (!c || String(c).toLowerCase() === 'world') return;
+                    const coords = getCoordinates(c, null);
+                    if (!coords) return;
+                    const coordKey = `${coords[0]},${coords[1]}`;
+                    const key = String(c).toLowerCase();
+                    if (!map.has(coordKey)) map.set(coordKey, { key, coords, count: 0 });
+                    map.get(coordKey).count++;
+                });
+            });
+            return map;
+        }
+
+        function isCountrySelected(countryKey) {
+            if (!compareCountryKey) return false;
+            const a = compareCountryKey.toLowerCase();
+            const b = countryKey.toLowerCase();
+            return a.includes(b) || b.includes(a) || eventMatchesCountry({ allCountries: [b], region: b }, compareCountryKey);
+        }
+
+        function renderCountryDots(events) {
+            countryDotsLayer.clearLayers();
+            collectCountriesWithEvents(events).forEach(({ key, coords, count }) => {
+                if (isChinaKey(key)) return;
+                const selected = isCountrySelected(key);
+                const dotClass = selected ? 'country-dot country-dot-selected' : 'country-dot';
+                const icon = L.divIcon({
+                    html: `<div class="${dotClass}" title="${count} event(s)"></div>`,
+                    className: 'bg-transparent',
+                    iconSize: [14, 14],
+                    iconAnchor: [7, 7]
+                });
+                const marker = L.marker(coords, { icon }).addTo(countryDotsLayer);
+                marker.on('click', (e) => {
+                    L.DomEvent.stopPropagation(e);
+                    handleCountryMapClick(key);
+                });
+            });
+        }
+
+        function updateCompareMapView(selectedEv = null) {
+            const keyChanged = compareCountryKey !== lastCompareKey;
+            lastCompareKey = compareCountryKey || '';
+            refreshMapLines(selectedEv || (selectedEventId ? eventsData.find(e => e.id === selectedEventId) : null));
+            flyToCompareCountries(keyChanged);
+        }
+
+        function buildEventCard(ev, compareCountryKey = null) {
             const el = document.createElement('div');
-            el.id = `${prefix}-${ev.id}`;
-            el.className = 'bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer flex overflow-hidden';
+            el.id = `list-item-${ev.id}`;
+            el.className = 'event-card bg-white border border-slate-200 rounded-md p-2 cursor-pointer hover:border-blue-300 hover:shadow-sm transition-all';
+            const emoji = getCategoryEmoji(ev.category);
+            let dirHint = '';
+            if (compareCountryKey) {
+                const dir = getEventInitiatorDirection(ev, compareCountryKey);
+                if (dir === 'china-to-other') dirHint = '<span class="text-[9px] font-bold text-red-600 bg-red-50 px-1 py-0.5 rounded">CN →</span>';
+                else if (dir === 'other-to-china') dirHint = '<span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1 py-0.5 rounded">→ CN</span>';
+                else if (dir === 'bidirectional') dirHint = '<span class="text-[9px] font-bold text-indigo-600 bg-indigo-50 px-1 py-0.5 rounded">↔</span>';
+            }
             el.innerHTML = `
-                <div class="w-20 bg-slate-100 shrink-0 flex items-center justify-center relative border-r border-slate-100">
-                    <img data-title="${escapeHtml(ev.title)}" data-wiki="${ev.wikiUrl || ''}" class="wiki-thumb absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" />
-                    <svg class="w-6 h-6 text-slate-300 placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                </div>
-                <div class="p-2 flex-1 flex flex-col justify-center min-w-0">
-                    <div class="flex justify-between items-start gap-1 mb-0.5">
-                        <h3 class="text-xs font-bold text-slate-800 leading-tight">${ev.title}</h3>
-                        <span class="text-[10px] font-bold whitespace-nowrap bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 shrink-0">${ev.rawYear}</span>
+                <div class="flex gap-2 items-start">
+                    <span class="event-emoji shrink-0" title="${escapeHtml(ev.category || 'Event')}">${emoji}</span>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between gap-1 mb-0.5">
+                            <div class="text-[11px] font-bold text-slate-800 leading-snug line-clamp-3 flex-1">${escapeHtml(ev.title)}</div>
+                            ${dirHint}
+                        </div>
+                        <div class="text-[10px] font-semibold text-slate-500">${escapeHtml(ev.rawYear)}</div>
+                        ${ev.category ? `<div class="text-[9px] text-slate-400 mt-0.5 truncate">${escapeHtml(ev.category)}</div>` : ''}
                     </div>
-                    <p class="text-[9px] text-slate-400 font-bold">${ev.region}</p>
-                    ${ev.impact ? `<p class="text-[10px] text-slate-500 mt-0.5 line-clamp-2">${ev.impact}</p>` : ''}
                 </div>`;
-            el.addEventListener('click', () => {
-                activeLinesLayer.clearLayers();
-                drawEventLines(ev, activeLinesLayer);
-                if (ev.allCoords && ev.allCoords.length > 1) { map.flyToBounds(L.latLngBounds(ev.allCoords), { padding: [50, 50], maxZoom: 5 }); }
-                else if (ev.latlng) { map.flyTo(ev.latlng, 5); }
-                clearTimeout(wikiDebounceTimer);
-                isWikiClosedByUser = false;
-                loadWikipediaSummary(ev);
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectEvent(ev);
                 scrollToEvent(ev.id);
             });
-            thumbObserver.observe(el.querySelector('.wiki-thumb'));
             return el;
         }
 
-        // Render parallel view as time-synchronized rows
-        function renderParallelRows(leftEvents, rightEvents) {
-            const container = document.getElementById('parallelRows');
-            container.innerHTML = '';
+        function groupEventsByYear(events) {
+            const byYear = new Map();
+            events.forEach(ev => {
+                if (!byYear.has(ev.numYear)) byYear.set(ev.numYear, []);
+                byYear.get(ev.numYear).push(ev);
+            });
+            return byYear;
+        }
 
-            if (leftEvents.length === 0 && rightEvents.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-400 mt-16 text-sm">No events in this period.</div>`;
-                return;
-            }
+        function buildCompareRows(chinaEvents, countryEvents, countryKey) {
+            const crossEvents = chinaEvents.filter(ev => eventInvolvesBoth(ev, countryKey));
+            const crossIds = new Set(crossEvents.map(e => e.id));
 
-            // Group each side's events by year
-            const leftByYear  = new Map();
-            const rightByYear = new Map();
-            leftEvents.forEach(ev  => { if (!leftByYear.has(ev.numYear))  leftByYear.set(ev.numYear, []);  leftByYear.get(ev.numYear).push(ev);  });
-            rightEvents.forEach(ev => { if (!rightByYear.has(ev.numYear)) rightByYear.set(ev.numYear, []); rightByYear.get(ev.numYear).push(ev); });
+            const chinaRest = chinaEvents.filter(ev => !crossIds.has(ev.id));
+            const countryRest = countryEvents.filter(ev => !crossIds.has(ev.id));
 
-            // All unique years in order
-            const allYears = [...new Set([...leftEvents, ...rightEvents].map(e => e.numYear))].sort((a, b) => a - b);
+            const chinaByYear = groupEventsByYear(chinaRest);
+            const countryByYear = groupEventsByYear(countryRest);
 
-            const frag = document.createDocumentFragment();
+            const pairedYears = [...chinaByYear.keys()].filter(y => countryByYear.has(y)).sort((a, b) => a - b);
 
-            allYears.forEach(year => {
-                const lg = leftByYear.get(year)  || [];
-                const rg = rightByYear.get(year) || [];
-                const rowCount = Math.max(lg.length, rg.length);
+            const rows = [];
 
-                for (let i = 0; i < rowCount; i++) {
-                    const lEv = lg[i] || null;
-                    const rEv = rg[i] || null;
+            crossEvents.sort((a, b) => a.numYear - b.numYear).forEach(ev => {
+                rows.push({ type: 'cross', year: ev.numYear, china: ev, country: ev });
+            });
 
-                    const row = document.createElement('div');
-                    row.className = 'flex border-b border-slate-100';
-
-                    const lCell = document.createElement('div');
-                    lCell.className = 'flex-1 border-r border-slate-100 p-2 bg-red-50/20';
-                    if (lEv) lCell.appendChild(buildParallelCard(lEv, 'parallel-left'));
-
-                    const rCell = document.createElement('div');
-                    rCell.className = 'flex-1 p-2 bg-blue-50/20';
-                    if (rEv) rCell.appendChild(buildParallelCard(rEv, 'parallel-right'));
-
-                    row.appendChild(lCell);
-                    row.appendChild(rCell);
-                    frag.appendChild(row);
+            pairedYears.forEach(year => {
+                const cl = chinaByYear.get(year) || [];
+                const ol = countryByYear.get(year) || [];
+                const n = Math.max(cl.length, ol.length);
+                for (let i = 0; i < n; i++) {
+                    rows.push({ type: 'paired', year, china: cl[i] || null, country: ol[i] || null });
                 }
             });
 
-            container.appendChild(frag);
+            return rows;
         }
 
-        // Unified rendering manager
-        function updateWindowBracket() {
-            const bracket = document.getElementById('windowBracket');
-            if (!bracket || maxYear === minYear) return;
-            const windowSize = selectedWindow;
-            if (windowSize === 0) { bracket.style.display = 'none'; return; }
-            const currentYear = parseInt(yearSlider.value, 10);
-            const range = maxYear - minYear;
-            const leftPct  = Math.max(0,   ((currentYear - windowSize - minYear) / range) * 100);
-            const rightPct = Math.min(100,  ((currentYear + windowSize - minYear) / range) * 100);
-            if (rightPct <= leftPct) { bracket.style.display = 'none'; return; }
-            bracket.style.left  = `${leftPct}%`;
-            bracket.style.width = `${rightPct - leftPct}%`;
-            bracket.style.display = 'block';
+        function appendSectionLabel(parent, text) {
+            const label = document.createElement('div');
+            label.className = 'sticky top-0 z-10 bg-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-500 px-2 py-1 border-b border-slate-200';
+            label.textContent = text;
+            parent.appendChild(label);
+        }
+
+        function getCompareEventList(chinaEvents, countryEvents, countryKey) {
+            const rows = buildCompareRows(chinaEvents, countryEvents, countryKey);
+            const cross = [];
+            const paired = [];
+            const seenCross = new Set();
+            const seenPaired = new Set();
+
+            rows.forEach(row => {
+                if (row.type === 'cross') {
+                    const ev = row.china || row.country;
+                    if (ev && !seenCross.has(ev.id)) {
+                        seenCross.add(ev.id);
+                        cross.push(ev);
+                    }
+                } else {
+                    [row.china, row.country].forEach(ev => {
+                        if (ev && !seenCross.has(ev.id) && !seenPaired.has(ev.id)) {
+                            seenPaired.add(ev.id);
+                            paired.push(ev);
+                        }
+                    });
+                }
+            });
+
+            cross.sort((a, b) => a.numYear - b.numYear);
+            paired.sort((a, b) => a.numYear - b.numYear);
+            return { cross, paired, all: [...cross, ...paired] };
+        }
+
+        function renderDefaultEventList(allEvents) {
+            eventsRows.innerHTML = '';
+            if (allEvents.length === 0) {
+                eventsRows.innerHTML = `<div class="text-center text-slate-400 mt-16 text-sm px-4"><p>No events in this timeframe.</p></div>`;
+                return;
+            }
+
+            const chinaEvents = allEvents.filter(ev => hasChina(ev));
+            const worldEvents = allEvents.filter(ev => !hasChina(ev));
+            const frag = document.createDocumentFragment();
+
+            if (chinaEvents.length) {
+                appendSectionLabel(frag, `🇨🇳 China (${chinaEvents.length})`);
+                chinaEvents.forEach(ev => {
+                    const row = document.createElement('div');
+                    row.className = 'border-b border-slate-100 p-1.5';
+                    row.appendChild(buildEventCard(ev));
+                    frag.appendChild(row);
+                });
+            }
+
+            if (worldEvents.length) {
+                appendSectionLabel(frag, `🌍 World (${worldEvents.length})`);
+                worldEvents.forEach(ev => {
+                    const row = document.createElement('div');
+                    row.className = 'border-b border-slate-100 p-1.5';
+                    row.appendChild(buildEventCard(ev));
+                    frag.appendChild(row);
+                });
+            }
+
+            eventsRows.appendChild(frag);
+        }
+
+        function renderCompareList(chinaEvents, countryEvents, countryKey) {
+            eventsRows.innerHTML = '';
+            const { cross, paired, all } = getCompareEventList(chinaEvents, countryEvents, countryKey);
+
+            if (all.length === 0) {
+                eventsRows.innerHTML = `<div class="text-center text-slate-400 mt-16 text-sm px-4"><p>No related events between China and ${escapeHtml(formatCountryLabel(countryKey))} in this range.</p><p class="text-xs mt-2 text-slate-400">Try widening the time range or pick another country.</p></div>`;
+                return;
+            }
+
+            const frag = document.createDocumentFragment();
+
+            if (cross.length) {
+                appendSectionLabel(frag, 'Linked (both countries)');
+                cross.forEach(ev => {
+                    const row = document.createElement('div');
+                    row.className = 'border-b border-slate-100 p-1.5';
+                    row.appendChild(buildEventCard(ev, countryKey));
+                    frag.appendChild(row);
+                });
+            }
+
+            if (paired.length) {
+                appendSectionLabel(frag, 'Same year');
+                paired.forEach(ev => {
+                    const row = document.createElement('div');
+                    row.className = 'border-b border-slate-100 p-1.5';
+                    row.appendChild(buildEventCard(ev, countryKey));
+                    frag.appendChild(row);
+                });
+            }
+
+            eventsRows.appendChild(frag);
         }
 
         function updateVisualization() {
-            const currentYear = parseInt(yearSlider.value, 10);
-            const windowSize = selectedWindow;
+            const startYear = rangeStartYear;
+            const endYear = rangeEndYear;
             const selectedCat = selectedCategory;
-            currentYearDisplay.textContent = formatYear(currentYear);
-            updateWindowBracket();
-            
-            const startYear = currentYear - windowSize;
-            const endYear = currentYear + windowSize;
+            updateRangeSelectionUI();
 
             const baseActiveEvents = eventsData.filter(ev => {
                 if (selectedCat !== 'All' && ev.category !== selectedCat) return false;
                 return ev.numYear >= startYear && ev.numYear <= endYear;
             });
-            
-            const isParallelMode = parallelToggle.checked;
 
-            if (isParallelMode) {
-                parallelView.classList.remove('hidden');
-                parallelView.classList.add('flex');
-                mainSidebar.classList.add('hidden'); 
-                
-                const leftEvents = [];
-                const rightEvents = [];
-                
-                baseActiveEvents.forEach(ev => {
-                    const isChina = hasChina(ev);
-                    if (isChina) {
-                        leftEvents.push(ev);
-                    } else {
-                        if (!selectedCountry || eventMatchesCountry(ev, selectedCountry)) {
-                            rightEvents.push(ev);
-                        }
-                    }
-                });
-                
-                renderParallelRows(leftEvents, rightEvents);
+            const chinaEvents = baseActiveEvents.filter(ev => hasChina(ev)).sort((a, b) => a.numYear - b.numYear);
 
-                parallelLeftCount.textContent = leftEvents.length;
-                parallelRightCount.textContent = rightEvents.length;
-                parallelRightTitle.textContent = (selectedCountry ? '📍 ' + selectedCountry.toUpperCase() : '🌍 WORLD');
-                
-            } else {
-                parallelView.classList.add('hidden');
-                parallelView.classList.remove('flex');
-                mainSidebar.classList.remove('hidden');
+            renderCountryDots(baseActiveEvents);
+            const selectedEv = selectedEventId ? baseActiveEvents.find(ev => ev.id === selectedEventId) : null;
+            updateCompareMapView(selectedEv);
 
-                const activeEvents = baseActiveEvents.filter(ev => {
-                    const isChina = hasChina(ev);
-                    if (!isChina) {
-                        if (selectedCountry) {
-                            if (!eventMatchesCountry(ev, selectedCountry)) return false;
-                        } else if (chinaOnlyToggle.checked) {
-                            return false;
-                        }
-                    }
-                    return true;
-                });
-                
-                markersLayer.clearLayers(); activeLinesLayer.clearLayers();
-                eventsList.innerHTML = ''; eventCount.textContent = activeEvents.length;
-
-                if (activeEvents.length > 0) {
-                    const sortedActive = [...activeEvents].sort((a, b) => a.numYear - b.numYear);
-                    clearTimeout(wikiDebounceTimer);
-                    wikiDebounceTimer = setTimeout(() => { loadWikipediaSummary(sortedActive[0]); }, 600); 
-                } else {
-                    currentWikiQuery = null;
-                }
-
-                if (activeEvents.length === 0) {
-                    eventsList.innerHTML = `<div class="text-center text-slate-400 mt-10"><p>No major events recorded in this timeframe.</p></div>`;
-                    return;
-                }
-
-                const clusteredPrimary = {};
-                activeEvents.forEach(ev => {
-                    if (ev.allCoords && ev.allCoords.length > 0) {
-                        const pKey = `${ev.allCoords[0][0]},${ev.allCoords[0][1]}`;
-                        if (!clusteredPrimary[pKey]) clusteredPrimary[pKey] = { latlng: ev.allCoords[0], events: [] };
-                        clusteredPrimary[pKey].events.push(ev);
-                    } else if (ev.latlng) {
-                        const key = `${ev.latlng[0]},${ev.latlng[1]}`;
-                        if (!clusteredPrimary[key]) clusteredPrimary[key] = { latlng: ev.latlng, events: [] };
-                        clusteredPrimary[key].events.push(ev);
-                    }
-                });
-
-                Object.values(clusteredPrimary).forEach(cluster => {
-                    const count = cluster.events.length;
-                    const radius = 18;
-                    const emoji = getCategoryEmoji(cluster.events[0].category);
-
-                    const iconHtml = `<div class="flex items-center justify-center w-full h-full transition-transform hover:scale-125" style="font-size: ${radius*1.5}px; line-height: 1; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5)); text-shadow: 0px 0px 4px rgba(255,255,255,0.8);">${emoji}</div>`;
-                    
-                    const sectorIcon = L.divIcon({
-                        html: iconHtml,
-                        className: 'bg-transparent', 
-                        iconSize: [radius*2, radius*2],
-                        iconAnchor: [radius, radius],
-                        popupAnchor: [0, -radius]
-                    });
-
-                    const marker = L.marker(cluster.latlng, { icon: sectorIcon }).addTo(markersLayer);
-
-                    let popupHtml = `<div class="max-h-64 overflow-y-auto w-64 pr-2"><h3 class="font-bold text-slate-800 border-b pb-2 mb-2 sticky top-0 bg-white">${cluster.events[0].region} <span class="text-sm font-normal text-slate-500">(${count} Event${count>1?'s':''})</span></h3>`;
-                    cluster.events.forEach(ev => {
-                        popupHtml += `<div class="mb-3 pb-3 border-b border-slate-100 last:border-0 last:mb-0 last:pb-0"><h4 class="font-semibold text-sm text-blue-700 leading-tight mb-1">${ev.title}</h4><div class="flex items-center gap-2 mb-1"><span class="text-xs font-bold text-slate-500">${ev.rawYear}</span></div><p class="text-xs text-slate-600"><strong>Category:</strong> ${ev.category}</p>${ev.impact ? `<p class="text-xs text-slate-600 mt-1 line-clamp-3" title="${ev.impact}">${ev.impact}</p>` : ''}</div>`;
-                    });
-                    popupHtml += `</div>`;
-                    marker.bindPopup(popupHtml);
-
-                    marker.on('click', (e) => {
-                        L.DomEvent.stopPropagation(e); 
-                        activeLinesLayer.clearLayers(); 
-                        
-                        let allClusterCoords = [];
-                        cluster.events.forEach(ev => { drawEventLines(ev, activeLinesLayer); if (ev.allCoords) allClusterCoords.push(...ev.allCoords); });
-
-                        const uniqueLocs = new Set(allClusterCoords.map(c => `${c[0]},${c[1]}`));
-                        if (uniqueLocs.size > 1) { map.flyToBounds(L.latLngBounds(allClusterCoords), { padding: [50, 50], maxZoom: 5 }); } 
-                        else { map.flyTo(cluster.latlng, 5); }
-                        
-                        // We intentionally DO NOT update the bottom focus timeline when an emoji is clicked.
-                        
-                        clearTimeout(wikiDebounceTimer); // Prevent auto-loader overwrite
-                        isWikiClosedByUser = false; 
-                        loadWikipediaSummary(cluster.events[0]);
-                        scrollToEvent(cluster.events[0].id);
-                    });
-                });
-
-                activeEvents.sort((a, b) => a.numYear - b.numYear).forEach(ev => {
-                    const el = document.createElement('div');
-                    el.id = `list-item-${ev.id}`;
-                    el.className = 'bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-all cursor-pointer';
-                    el.innerHTML = `<div class="flex justify-between items-start mb-1"><h3 class="text-sm font-bold text-slate-800 leading-tight flex-1 pr-2">${ev.title}</h3><span class="text-xs font-bold whitespace-nowrap bg-slate-100 px-2 py-1 rounded text-slate-600">${ev.rawYear}</span></div><div class="flex items-center gap-2 mb-2 text-xs"><span class="font-medium text-slate-500 flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>${ev.allCountries && ev.allCountries.length > 0 ? ev.allCountries.join(', ') : ev.region}</span></div>${ev.impact ? `<p class="text-xs text-slate-600 mb-2">${ev.impact}</p>` : ''}<div class="flex items-center mt-2 pt-2 border-t border-slate-100"><span class="text-[10px] uppercase font-semibold text-slate-500">${ev.category}</span></div>`;
-                    
-                    el.addEventListener('click', () => {
-                        activeLinesLayer.clearLayers();
-                        drawEventLines(ev, activeLinesLayer);
-                        if (ev.allCoords && ev.allCoords.length > 1) { map.flyToBounds(L.latLngBounds(ev.allCoords), { padding: [50, 50], maxZoom: 5 }); } 
-                        else if (ev.latlng) { map.flyTo(ev.latlng, 5); }
-
-                        clearTimeout(wikiDebounceTimer); // Prevent auto-loader overwrite
-                        isWikiClosedByUser = false;
-                        loadWikipediaSummary(ev);
-                        scrollToEvent(ev.id);
-                    });
-                    
-                    eventsList.appendChild(el);
-                });
+            if (selectedEventId && !baseActiveEvents.some(ev => ev.id === selectedEventId)) {
+                hideWikiPanel();
             }
+
+            if (!compareCountryKey) {
+                eventsColumnCount.textContent = baseActiveEvents.length;
+                eventCount.textContent = baseActiveEvents.length;
+                renderDefaultEventList(baseActiveEvents);
+            } else {
+                const countryEvents = baseActiveEvents
+                    .filter(ev => eventMatchesCountry(ev, compareCountryKey))
+                    .sort((a, b) => a.numYear - b.numYear);
+                const { all: relatedEvents } = getCompareEventList(chinaEvents, countryEvents, compareCountryKey);
+                eventsColumnCount.textContent = relatedEvents.length;
+                eventCount.textContent = relatedEvents.length;
+                renderCompareList(chinaEvents, countryEvents, compareCountryKey);
+            }
+
+            highlightSelectedEvent();
         }
 
         // UI Event Listeners
-        yearSlider.addEventListener('input', updateVisualization);
-        chinaOnlyToggle.addEventListener('change', () => { drawSpikes(); updateVisualization(); });
-        parallelToggle.addEventListener('change', updateVisualization);
-
-        closeWikiBtn.addEventListener('click', () => {
-            wikiPanel.classList.add('hidden'); wikiPanel.classList.remove('flex');
-            isWikiClosedByUser = true; setTimeout(() => { if (map) map.invalidateSize(); }, 300); 
+        rangeStartInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); applyRangeFromInputs(); }
+        });
+        rangeEndInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); applyRangeFromInputs(); }
+        });
+        rangeInputGroup.addEventListener('focusout', (e) => {
+            if (rangeInputGroup.contains(e.relatedTarget)) return;
+            applyRangeFromInputs();
         });
 
-        // Wheel to zoom
+        closeWikiBtn.addEventListener('click', () => {
+            isWikiClosedByUser = true;
+            hideWikiPanel();
+        });
+
+        function dismissTimelineHints() {
+            timelineSliderRow?.classList.add('timeline-hints-dismissed');
+        }
+
+        function startRangeDrag(mode, clientX) {
+            dismissTimelineHints();
+            rangeDragMode = mode;
+            rangeDragStartX = clientX;
+            rangeDragStartValues = { start: rangeStartYear, end: rangeEndYear };
+        }
+
+        rangeHandleLeft.addEventListener('mousedown', (e) => {
+            if (!eventsData.length) return;
+            e.preventDefault();
+            e.stopPropagation();
+            startRangeDrag('left', e.clientX);
+        });
+        rangeHandleRight.addEventListener('mousedown', (e) => {
+            if (!eventsData.length) return;
+            e.preventDefault();
+            e.stopPropagation();
+            startRangeDrag('right', e.clientX);
+        });
+        rangeBody.addEventListener('mousedown', (e) => {
+            if (!eventsData.length) return;
+            e.preventDefault();
+            e.stopPropagation();
+            startRangeDrag('move', e.clientX);
+        });
+        windowBracket.addEventListener('mousedown', (e) => e.stopPropagation());
+
+        // Wheel to zoom timeline viewport
         timelineContainer.addEventListener('wheel', (e) => {
-            if (!eventsData.length || yearSlider.disabled) return;
+            if (!eventsData.length) return;
             e.preventDefault(); 
             const zoomFactor = 0.20; 
             const currentRange = maxYear - minYear;
@@ -1418,26 +1851,40 @@
             updateTimelineBounds();
         });
 
-        // Drag to pan or click to move timeline
+        // Drag empty timeline area to pan viewport
         timelineContainer.addEventListener('mousedown', (e) => {
-            if (!eventsData.length || yearSlider.disabled) return;
+            if (!eventsData.length || windowBracket.contains(e.target)) return;
             
-            const rect = yearSlider.getBoundingClientRect();
-            const range = maxYear - minYear;
-            const thumbPct = (yearSlider.value - minYear) / range;
-            const thumbX = rect.left + (rect.width * thumbPct);
-            
-            if (Math.abs(e.clientX - thumbX) > 15) {
-                e.preventDefault(); 
-                isDraggingTimeline = true;
-                hasDraggedTimeline = false; 
-                startMouseX = e.clientX;
-                lastMouseX = e.clientX;
-                timelineContainer.style.cursor = 'ew-resize';
-            }
+            e.preventDefault(); 
+            isDraggingTimeline = true;
+            hasDraggedTimeline = false; 
+            startMouseX = e.clientX;
+            lastMouseX = e.clientX;
+            timelineContainer.style.cursor = 'ew-resize';
         });
 
         window.addEventListener('mousemove', (e) => {
+            if (rangeDragMode) {
+                e.preventDefault();
+                const deltaYears = deltaYearsFromDrag(e.clientX);
+                if (rangeDragMode === 'left') {
+                    rangeStartYear = Math.max(globalMinYear, Math.min(rangeDragStartValues.start + deltaYears, rangeDragStartValues.end - MIN_RANGE_SPAN));
+                } else if (rangeDragMode === 'right') {
+                    rangeEndYear = Math.max(rangeDragStartValues.start + MIN_RANGE_SPAN, Math.min(rangeDragStartValues.end + deltaYears, globalMaxYear));
+                } else if (rangeDragMode === 'move') {
+                    const span = rangeDragStartValues.end - rangeDragStartValues.start;
+                    let newStart = rangeDragStartValues.start + deltaYears;
+                    let newEnd = rangeDragStartValues.end + deltaYears;
+                    if (newStart < globalMinYear) { newStart = globalMinYear; newEnd = newStart + span; }
+                    if (newEnd > globalMaxYear) { newEnd = globalMaxYear; newStart = newEnd - span; }
+                    rangeStartYear = newStart;
+                    rangeEndYear = newEnd;
+                }
+                updateRangeSelectionUI();
+                updateVisualization();
+                return;
+            }
+
             if (isDraggingTimeline) {
                 e.preventDefault(); 
                 if (dragRafId) return;
@@ -1473,21 +1920,15 @@
             }
         });
 
-        window.addEventListener('mouseup', (e) => {
+        window.addEventListener('mouseup', () => {
+            if (rangeDragMode) {
+                rangeDragMode = null;
+                return;
+            }
             if (isDraggingTimeline) {
                 isDraggingTimeline = false;
                 timelineContainer.style.cursor = 'crosshair';
                 if (dragRafId) { cancelAnimationFrame(dragRafId); dragRafId = null; }
-                
-                if (!hasDraggedTimeline) {
-                    const rect = timelineContainer.getBoundingClientRect();
-                    if (e.clientX >= rect.left && e.clientX <= rect.right) {
-                        const clickPct = (e.clientX - rect.left) / rect.width;
-                        const clickedYear = minYear + (maxYear - minYear) * clickPct;
-                        yearSlider.value = Math.round(clickedYear);
-                        updateVisualization(); 
-                    }
-                }
             }
         });
 
@@ -1496,13 +1937,17 @@
             if (isPlaying) {
                 iconPlay.classList.add('hidden'); iconPause.classList.remove('hidden');
                 playBtn.classList.replace('bg-blue-600', 'bg-red-500'); playBtn.classList.replace('hover:bg-blue-700', 'hover:bg-red-600');
-                const range = maxYear - minYear;
-                const step = Math.max(1, Math.floor(range / 100));
+                const span = rangeEndYear - rangeStartYear;
+                const step = Math.max(1, Math.floor(span / 20));
 
                 playInterval = setInterval(() => {
-                    let nextVal = parseInt(yearSlider.value) + step;
-                    if (nextVal > maxYear) { nextVal = maxYear; togglePlay(); }
-                    yearSlider.value = nextVal; updateVisualization();
+                    let newStart = rangeStartYear + step;
+                    let newEnd = rangeEndYear + step;
+                    if (newEnd > globalMaxYear) { togglePlay(); return; }
+                    rangeStartYear = newStart;
+                    rangeEndYear = newEnd;
+                    updateRangeSelectionUI();
+                    updateVisualization();
                 }, 200);
             } else {
                 iconPlay.classList.remove('hidden'); iconPause.classList.add('hidden');
