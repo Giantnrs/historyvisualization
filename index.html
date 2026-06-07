@@ -122,25 +122,21 @@
             </div>
         </div>
 
-        <!-- NEW: Parallel History Overlay View -->
-        <div id="parallelView" class="absolute inset-0 z-[1500] bg-slate-50 hidden flex-row overflow-hidden">
-            <!-- Left Side: China -->
-            <div class="flex-1 flex flex-col border-r border-slate-300">
-                <div class="bg-red-50 text-red-800 p-4 font-bold text-lg border-b border-red-200 shrink-0 shadow-sm z-10 flex justify-between items-center">
-                    <span class="flex items-center space-x-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span>CHINA EVENTS</span></span>
-                    <span id="parallelLeftCount" class="bg-red-200 text-red-900 text-xs px-2.5 py-1 rounded-full shadow-inner">0</span>
+        <!-- Parallel History Overlay View -->
+        <div id="parallelView" class="absolute inset-0 z-[1500] bg-white hidden flex-col overflow-hidden">
+            <!-- Fixed column headers -->
+            <div class="flex shrink-0 border-b-2 border-slate-200 shadow-sm">
+                <div class="flex-1 bg-red-50 text-red-800 px-4 py-3 font-bold text-sm border-r border-red-200 flex justify-between items-center">
+                    <span>🇨🇳 CHINA</span>
+                    <span id="parallelLeftCount" class="bg-red-200 text-red-900 text-xs px-2 py-0.5 rounded-full">0</span>
                 </div>
-                <div id="parallelLeftList" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-100/50 relative"></div>
-            </div>
-            
-            <!-- Right Side: World / Selected Country -->
-            <div class="flex-1 flex flex-col">
-                <div class="bg-blue-50 text-blue-800 p-4 font-bold text-lg border-b border-blue-200 shrink-0 shadow-sm z-10 flex justify-between items-center">
-                    <span class="flex items-center space-x-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span id="parallelRightTitle">WORLD EVENTS</span></span>
-                    <span id="parallelRightCount" class="bg-blue-200 text-blue-900 text-xs px-2.5 py-1 rounded-full shadow-inner">0</span>
+                <div class="flex-1 bg-blue-50 text-blue-800 px-4 py-3 font-bold text-sm flex justify-between items-center">
+                    <span id="parallelRightTitle">🌍 WORLD</span>
+                    <span id="parallelRightCount" class="bg-blue-200 text-blue-900 text-xs px-2 py-0.5 rounded-full">0</span>
                 </div>
-                <div id="parallelRightList" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-100/50 relative"></div>
             </div>
+            <!-- Single synchronized scrollable rows -->
+            <div id="parallelRows" class="flex-1 overflow-y-auto"></div>
         </div>
 
     </main>
@@ -466,9 +462,7 @@
 
         // Parallel View Elements
         const parallelView = document.getElementById('parallelView');
-        const parallelLeftList = document.getElementById('parallelLeftList');
-        const parallelRightList = document.getElementById('parallelRightList');
-        const parallelLeftCount = document.getElementById('parallelLeftCount');
+        const parallelLeftCount  = document.getElementById('parallelLeftCount');
         const parallelRightCount = document.getElementById('parallelRightCount');
         const parallelRightTitle = document.getElementById('parallelRightTitle');
 
@@ -1136,49 +1130,86 @@
         }
 
         // Render List logic for Parallel View
-        function renderParallelList(eventsList, container, prefix) {
+        // Build a single event card for the parallel view
+        function buildParallelCard(ev, prefix) {
+            const el = document.createElement('div');
+            el.id = `${prefix}-${ev.id}`;
+            el.className = 'bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer flex overflow-hidden';
+            el.innerHTML = `
+                <div class="w-20 bg-slate-100 shrink-0 flex items-center justify-center relative border-r border-slate-100">
+                    <img data-title="${escapeHtml(ev.title)}" data-wiki="${ev.wikiUrl || ''}" class="wiki-thumb absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" />
+                    <svg class="w-6 h-6 text-slate-300 placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
+                <div class="p-2 flex-1 flex flex-col justify-center min-w-0">
+                    <div class="flex justify-between items-start gap-1 mb-0.5">
+                        <h3 class="text-xs font-bold text-slate-800 leading-tight">${ev.title}</h3>
+                        <span class="text-[10px] font-bold whitespace-nowrap bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 shrink-0">${ev.rawYear}</span>
+                    </div>
+                    <p class="text-[9px] text-slate-400 font-bold">${ev.region}</p>
+                    ${ev.impact ? `<p class="text-[10px] text-slate-500 mt-0.5 line-clamp-2">${ev.impact}</p>` : ''}
+                </div>`;
+            el.addEventListener('click', () => {
+                activeLinesLayer.clearLayers();
+                drawEventLines(ev, activeLinesLayer);
+                if (ev.allCoords && ev.allCoords.length > 1) { map.flyToBounds(L.latLngBounds(ev.allCoords), { padding: [50, 50], maxZoom: 5 }); }
+                else if (ev.latlng) { map.flyTo(ev.latlng, 5); }
+                clearTimeout(wikiDebounceTimer);
+                isWikiClosedByUser = false;
+                loadWikipediaSummary(ev);
+                scrollToEvent(ev.id);
+            });
+            thumbObserver.observe(el.querySelector('.wiki-thumb'));
+            return el;
+        }
+
+        // Render parallel view as time-synchronized rows
+        function renderParallelRows(leftEvents, rightEvents) {
+            const container = document.getElementById('parallelRows');
             container.innerHTML = '';
-            if (eventsList.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-400 mt-10">No events in this period.</div>`;
+
+            if (leftEvents.length === 0 && rightEvents.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-400 mt-16 text-sm">No events in this period.</div>`;
                 return;
             }
-            
-            eventsList.sort((a, b) => a.numYear - b.numYear).forEach(ev => {
-                const el = document.createElement('div');
-                el.id = `${prefix}-${ev.id}`;
-                el.className = 'bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer flex overflow-hidden min-h-[96px]';
 
-                el.innerHTML = `
-                    <div class="w-32 bg-slate-200 shrink-0 flex items-center justify-center relative border-r border-slate-100">
-                        <img data-title="${escapeHtml(ev.title)}" data-wiki="${ev.wikiUrl || ''}" class="wiki-thumb absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Thumbnail" />
-                        <svg class="w-8 h-8 text-slate-400 placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>
-                    <div class="p-3 flex-1 flex flex-col justify-center">
-                        <div class="flex justify-between items-start mb-1">
-                            <h3 class="text-sm font-bold text-slate-800 leading-tight pr-2">${ev.title}</h3>
-                            <span class="text-xs font-bold whitespace-nowrap bg-slate-100 px-2 py-1 rounded text-slate-600">${ev.rawYear}</span>
-                        </div>
-                        <p class="text-[10px] text-slate-500 font-bold mb-1">${ev.region}</p>
-                        ${ev.impact ? `<p class="text-[11px] text-slate-600 mb-2 line-clamp-2">${ev.impact}</p>` : ''}
-                    </div>
-                `;
+            // Group each side's events by year
+            const leftByYear  = new Map();
+            const rightByYear = new Map();
+            leftEvents.forEach(ev  => { if (!leftByYear.has(ev.numYear))  leftByYear.set(ev.numYear, []);  leftByYear.get(ev.numYear).push(ev);  });
+            rightEvents.forEach(ev => { if (!rightByYear.has(ev.numYear)) rightByYear.set(ev.numYear, []); rightByYear.get(ev.numYear).push(ev); });
 
-                // Let Parallel items be fully clickable and navigation-friendly
-                el.addEventListener('click', () => {
-                    activeLinesLayer.clearLayers();
-                    drawEventLines(ev, activeLinesLayer);
-                    if (ev.allCoords && ev.allCoords.length > 1) { map.flyToBounds(L.latLngBounds(ev.allCoords), { padding: [50, 50], maxZoom: 5 }); } 
-                    else if (ev.latlng) { map.flyTo(ev.latlng, 5); }
+            // All unique years in order
+            const allYears = [...new Set([...leftEvents, ...rightEvents].map(e => e.numYear))].sort((a, b) => a - b);
 
-                    clearTimeout(wikiDebounceTimer); // Prevent auto-loader overwrite
-                    isWikiClosedByUser = false;
-                    loadWikipediaSummary(ev);
-                    scrollToEvent(ev.id);
-                });
+            const frag = document.createDocumentFragment();
 
-                container.appendChild(el);
-                thumbObserver.observe(el.querySelector('.wiki-thumb'));
+            allYears.forEach(year => {
+                const lg = leftByYear.get(year)  || [];
+                const rg = rightByYear.get(year) || [];
+                const rowCount = Math.max(lg.length, rg.length);
+
+                for (let i = 0; i < rowCount; i++) {
+                    const lEv = lg[i] || null;
+                    const rEv = rg[i] || null;
+
+                    const row = document.createElement('div');
+                    row.className = 'flex border-b border-slate-100';
+
+                    const lCell = document.createElement('div');
+                    lCell.className = 'flex-1 border-r border-slate-100 p-2 bg-red-50/20';
+                    if (lEv) lCell.appendChild(buildParallelCard(lEv, 'parallel-left'));
+
+                    const rCell = document.createElement('div');
+                    rCell.className = 'flex-1 p-2 bg-blue-50/20';
+                    if (rEv) rCell.appendChild(buildParallelCard(rEv, 'parallel-right'));
+
+                    row.appendChild(lCell);
+                    row.appendChild(rCell);
+                    frag.appendChild(row);
+                }
             });
+
+            container.appendChild(frag);
         }
 
         // Unified rendering manager
@@ -1233,12 +1264,11 @@
                     }
                 });
                 
-                renderParallelList(leftEvents, parallelLeftList, 'parallel-left');
-                renderParallelList(rightEvents, parallelRightList, 'parallel-right');
-                
+                renderParallelRows(leftEvents, rightEvents);
+
                 parallelLeftCount.textContent = leftEvents.length;
                 parallelRightCount.textContent = rightEvents.length;
-                parallelRightTitle.textContent = selectedCountry ? selectedCountry.toUpperCase() + " EVENTS" : "WORLD EVENTS";
+                parallelRightTitle.textContent = (selectedCountry ? '📍 ' + selectedCountry.toUpperCase() : '🌍 WORLD');
                 
             } else {
                 parallelView.classList.add('hidden');
