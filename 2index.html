@@ -28,13 +28,17 @@
         }
         .leaflet-popup-content-wrapper { border-radius: 0.5rem; }
 
-        .custom-range { -webkit-appearance: none; appearance: none; background: transparent; }
+        .custom-range {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+        }
         .custom-range:focus { outline: none; }
         .custom-range::-webkit-slider-thumb {
             -webkit-appearance: none;
             height: 92px;
             width: 6px;
-            background: #3b82f6;
+            background: linear-gradient(180deg, #f87171 0%, #8b5cf6 50%, #3b82f6 100%);
             border-radius: 3px;
             cursor: pointer;
             border: 2px solid white;
@@ -43,7 +47,7 @@
         .custom-range::-moz-range-thumb {
             height: 92px;
             width: 6px;
-            background: #3b82f6;
+            background: linear-gradient(180deg, #f87171 0%, #8b5cf6 50%, #3b82f6 100%);
             border-radius: 3px;
             cursor: pointer;
             border: 2px solid white;
@@ -90,7 +94,7 @@
                 <h2 class="text-2xl font-semibold text-slate-700">Events in Timeframe</h2>
                 <span id="eventCount" class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded-full">0</span>
             </div>
-
+            
             <div id="eventsListWrap">
                 <div id="eventsList" class="p-4 space-y-4"></div>
             </div>
@@ -98,7 +102,6 @@
 
         <!-- Map & Wiki Wrapper -->
         <div id="mapWrapper" class="flex-1 flex relative overflow-hidden">
-            <!-- Map Container -->
             <div id="map" class="flex-1 bg-slate-200 relative transition-all duration-300 cursor-pointer">
                 <div id="loadingOverlay" class="absolute inset-0 bg-white/80 z-[1000] flex flex-col items-center justify-center hidden">
                     <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mb-4"></div>
@@ -106,7 +109,6 @@
                 </div>
             </div>
 
-            <!-- Wikipedia Panel (Half size of map area) -->
             <div id="wikiPanel" class="w-1/2 bg-white border-l border-slate-200 flex-col shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.1)] z-[1000] hidden transition-all duration-300">
                 <div class="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center shrink-0">
                     <div class="flex items-center space-x-2">
@@ -117,15 +119,11 @@
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
-                <div id="wikiContent" class="flex-1 overflow-y-auto p-6">
-                    <!-- Wiki content injected here -->
-                </div>
+                <div id="wikiContent" class="flex-1 overflow-y-auto p-6"></div>
             </div>
         </div>
 
-        <!-- Parallel History Overlay View -->
         <div id="parallelView" class="absolute inset-0 z-[1500] bg-white hidden flex-col overflow-hidden">
-            <!-- Fixed column headers -->
             <div class="flex shrink-0 border-b-2 border-slate-200 shadow-sm">
                 <div class="flex-1 bg-red-50 text-red-800 px-4 py-3 font-bold text-sm border-r border-red-200 flex justify-between items-center">
                     <span>🇨🇳 CHINA</span>
@@ -136,106 +134,83 @@
                     <span id="parallelRightCount" class="bg-blue-200 text-blue-900 text-xs px-2 py-0.5 rounded-full">0</span>
                 </div>
             </div>
-            <!-- Single synchronized scrollable rows -->
             <div id="parallelRows" class="flex-1 overflow-y-auto"></div>
         </div>
 
     </main>
 
-    <!-- Footer / Timeline Scrubber -->
     <footer id="timelineFooter" class="bg-gradient-to-t from-blue-50/60 via-white to-white border-t border-slate-200 p-4 shrink-0 shadow-[0_-4px_15px_-3px_rgba(0,0,0,0.1)] z-10">
-        <div class="w-full">
+        <div id="timelineFooterContent" class="w-full">
             
-            <!-- Timeline Controls — lean single row -->
-            <div class="flex items-center gap-2 mb-2">
-
-                <!-- LEFT: Playback + Editable Year -->
-                <div class="flex items-center gap-3 shrink-0">
-                    <button id="playBtn" class="w-8 h-8 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0" disabled>
-                        <svg id="iconPlay" class="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
-                        <svg id="iconPause" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+            <!-- Timeline Controls -->
+            <div id="timelineFooterControls" class="flex items-center justify-between pb-3">
+                <div class="flex items-center space-x-4">
+                    <button id="playBtn" class="w-10 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <svg id="iconPlay" class="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                        <svg id="iconPause" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
                     </button>
-
-                    <!-- Editable Year — click to type a year directly -->
-                    <div id="yearDisplayWrapper" class="relative cursor-text group" title="Click to jump to any year">
-                        <span id="currentYearDisplay" class="text-2xl font-bold text-slate-800 tabular-nums select-none">----</span>
-                        <input id="yearInput" type="text"
-                            class="hidden text-2xl font-bold text-blue-600 tabular-nums w-32 border-0 border-b-2 border-blue-500 outline-none bg-transparent p-0"
-                            placeholder="e.g. 1492 or 500 BC"
-                            autocomplete="off" spellcheck="false" />
-                        <!-- Subtle underline hint on hover -->
-                        <span class="absolute -bottom-0.5 left-0 w-full h-0.5 bg-blue-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-left pointer-events-none"></span>
+                    
+                    <div class="flex flex-col">
+                        <span class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Selected Year</span>
+                        <input type="text" id="yearInput" disabled
+                            class="w-32 text-xl font-bold text-slate-800 bg-white border border-slate-300 rounded-lg px-3 py-1 shadow-sm hover:border-blue-400 focus:border-blue-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            placeholder="----"
+                            title="Type a year and press Enter (e.g. 1949, 500 BC)"
+                            autocomplete="off" spellcheck="false">
                     </div>
                 </div>
 
-                <!-- SPACER -->
-                <div class="flex-1 min-w-0"></div>
-
-                <!-- RIGHT: Filters + View toggles -->
-                <div class="flex items-center gap-1.5 shrink-0">
-
-                    <!-- Category Dropdown (no label prefix) -->
-                    <div id="categoryDropdown" class="relative">
-                        <button id="categoryBtn" disabled
-                            class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 hover:border-blue-400 hover:bg-white transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
-                            <span id="categoryBtnEmoji" class="text-sm leading-none">🗂️</span>
-                            <span id="categoryBtnLabel" class="text-xs font-medium text-slate-700 max-w-[100px] truncate">All</span>
-                            <svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                        </button>
-                        <div id="categoryMenu" class="hidden absolute bottom-full mb-2 left-0 z-[9999] bg-white border border-slate-200 rounded-xl shadow-2xl min-w-[200px] py-1"></div>
-                    </div>
-
-                    <!-- Window Dropdown (clock icon + compact value) -->
+                <div class="flex items-center space-x-3">
+                    <label class="text-sm font-medium text-slate-600">Time Window:</label>
                     <div id="windowDropdown" class="relative">
                         <button id="windowBtn"
-                            class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 hover:border-blue-400 hover:bg-white transition-all cursor-pointer">
-                            <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <span id="windowBtnLabel" class="text-xs font-medium text-slate-700">±50</span>
-                            <svg class="w-3 h-3 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            class="flex items-center gap-2 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:border-blue-400 hover:shadow-md transition-all cursor-pointer min-w-[120px]">
+                            <span id="windowBtnLabel" class="flex-1 text-left font-medium">± 50 Years</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
-                        <div id="windowMenu" class="hidden absolute bottom-full mb-2 right-0 z-[9999] bg-white border border-slate-200 rounded-xl shadow-2xl min-w-[140px] py-1"></div>
-                    </div>
-
-                    <!-- Divider -->
-                    <div class="w-px h-5 bg-slate-200 mx-0.5 shrink-0"></div>
-
-                    <!-- China Only (flag + compact toggle, no text) -->
-                    <label class="flex items-center gap-1.5 cursor-pointer select-none" title="Show China events only">
-                        <input type="checkbox" id="chinaOnlyToggle" class="sr-only peer" disabled>
-                        <span class="text-base leading-none">🇨🇳</span>
-                        <div class="relative w-8 h-[18px] bg-slate-200
-                                    peer-focus:ring-1 peer-focus:ring-red-300 rounded-full
-                                    after:content-[''] after:absolute after:top-[2px] after:left-[2px]
-                                    after:bg-white after:rounded-full after:h-[14px] after:w-[14px]
-                                    after:transition-all after:shadow-sm
-                                    peer-checked:bg-red-500 peer-checked:after:translate-x-[14px]
-                                    peer-disabled:opacity-40 transition-colors"></div>
-                    </label>
-
-                    <!-- Divider -->
-                    <div class="w-px h-5 bg-slate-200 mx-0.5 shrink-0"></div>
-
-                    <!-- Parallel Mode (button-style toggle) -->
-                    <label class="flex items-center cursor-pointer select-none group" title="Compare China & World side-by-side">
-                        <input type="checkbox" id="parallelToggle" class="sr-only peer" disabled>
-                        <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50
-                                    peer-checked:bg-indigo-50 peer-checked:border-indigo-400
-                                    peer-disabled:opacity-40
-                                    group-hover:border-blue-300 group-hover:bg-white transition-all">
-                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 0v10"/>
-                            </svg>
-                            <span class="text-xs font-semibold text-slate-600">Parallel</span>
+                        <div id="windowMenu"
+                            class="hidden absolute bottom-full mb-2 left-0 z-[9999] bg-white border border-slate-200 rounded-xl shadow-2xl min-w-[160px] py-1">
                         </div>
-                    </label>
-
-                    <!-- Dynamic Country Filter (shown when a country is active) -->
-                    <div id="countryFilterContainer" class="hidden items-center gap-1.5 border-l border-slate-200 pl-2 ml-0.5">
-                        <span id="activeCountryLabel" class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-0.5 rounded-full">Country</span>
-                        <button id="clearCountryBtn" class="text-slate-400 hover:text-red-500 transition-colors" title="Clear country filter">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>
                     </div>
+                </div>
+
+                <div class="flex items-center space-x-2 border-l border-slate-300 pl-4 ml-2">
+                    <label class="text-sm font-medium text-slate-600">Category:</label>
+                    <div id="categoryDropdown" class="relative">
+                        <button id="categoryBtn" disabled
+                            class="flex items-center gap-2 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-700 shadow-sm hover:border-blue-400 hover:shadow-md transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed min-w-[155px] max-w-[200px]">
+                            <span id="categoryBtnEmoji" class="text-base leading-none">🗂️</span>
+                            <span id="categoryBtnLabel" class="flex-1 text-left truncate font-medium">All Categories</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="categoryMenu"
+                            class="hidden absolute bottom-full mb-2 left-0 z-[9999] bg-white border border-slate-200 rounded-xl shadow-2xl min-w-[200px] py-1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2 border-l border-slate-300 pl-4 ml-2">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="chinaOnlyToggle" class="sr-only peer" disabled>
+                        <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500 disabled:opacity-50"></div>
+                        <span class="ml-2 text-sm font-medium text-slate-600">China Only</span>
+                    </label>
+                </div>
+                
+                <div class="flex items-center space-x-2 border-l border-slate-300 pl-4 ml-2">
+                    <label class="relative inline-flex items-center cursor-pointer" title="Compare China history with the rest of the world">
+                        <input type="checkbox" id="parallelToggle" class="sr-only peer" disabled>
+                        <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 disabled:opacity-50"></div>
+                        <span class="ml-2 text-sm font-bold text-indigo-700 uppercase tracking-wide">Parallel Mode</span>
+                    </label>
+                </div>
+
+                <div id="countryFilterContainer" class="hidden items-center space-x-2 border-l border-slate-300 pl-4 ml-2">
+                    <span class="text-sm font-medium text-slate-600">Focus:</span>
+                    <span id="activeCountryLabel" class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded">Country</span>
+                    <button id="clearCountryBtn" class="text-slate-400 hover:text-red-500 transition-colors" title="Clear Country Filter">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </button>
                 </div>
             </div>
 
@@ -282,7 +257,6 @@
                 <span id="maxYearLabel" class="text-sm font-bold text-slate-800 w-16 shrink-0 text-left">Max</span>
             </div>
 
-            <!-- Year Axis -->
             <div id="timelineFooterAxis" class="flex items-start space-x-4 mt-2">
                 <div class="w-16 shrink-0"></div>
                 <div id="yearAxis" class="relative flex-1 min-w-0 h-9 pointer-events-none overflow-hidden"></div>
@@ -306,15 +280,10 @@
         let playInterval;
         let minYear = 0;
         let maxYear = 0;
-        let globalMinYear = 0;
-        let globalMaxYear = 0;
+        let globalMinYear = 0; 
+        let globalMaxYear = 0; 
         let windowCenterYear = 0;
         let selectedCountry = null;
-
-        const bottomTrackMutedPalette = [
-            'bg-slate-200', 'bg-stone-300', 'bg-zinc-200', 'bg-neutral-300',
-            'bg-slate-300', 'bg-stone-200', 'bg-zinc-300', 'bg-neutral-200'
-        ];
 
         // Wikipedia Global Cache
         const wikiCache = new Map(); 
@@ -338,6 +307,11 @@
             { name: "Modern Era", start: 1991, end: 2050, color: "bg-gray-400" }
         ];
 
+        const bottomTrackMutedPalette = [
+            'bg-slate-200', 'bg-stone-300', 'bg-zinc-200', 'bg-neutral-300',
+            'bg-slate-300', 'bg-stone-200', 'bg-zinc-300', 'bg-neutral-200'
+        ];
+
         const countryTimelines = {
             "new zealand": [{ name: "Maori Settlement", start: 1280, end: 1642, color: "bg-emerald-200" }, { name: "European Exploration", start: 1642, end: 1840, color: "bg-teal-200" }, { name: "Colonial Era", start: 1840, end: 1907, color: "bg-cyan-200" }, { name: "Dominion", start: 1907, end: 1945, color: "bg-sky-200" }, { name: "Modern Era", start: 1945, end: 2050, color: "bg-blue-200" }],
             "australia": [{ name: "Indigenous Era", start: -50000, end: 1788, color: "bg-orange-200" }, { name: "Colonial Era", start: 1788, end: 1901, color: "bg-amber-200" }, { name: "Federation & Wars", start: 1901, end: 1945, color: "bg-yellow-200" }, { name: "Modern Era", start: 1945, end: 2050, color: "bg-lime-200" }],
@@ -345,9 +319,9 @@
             "china": [{ name: "Xia", start: -2070, end: -1600, color: "bg-red-200" }, { name: "Shang", start: -1600, end: -1046, color: "bg-orange-200" }, { name: "Zhou", start: -1046, end: -256, color: "bg-amber-200" }, { name: "Qin", start: -221, end: -206, color: "bg-yellow-200" }, { name: "Han", start: -202, end: 220, color: "bg-lime-200" }, { name: "Three Kingdoms", start: 220, end: 280, color: "bg-green-200" }, { name: "Jin", start: 266, end: 420, color: "bg-emerald-200" }, { name: "N/S Dynasties", start: 420, end: 589, color: "bg-teal-200" }, { name: "Sui", start: 581, end: 618, color: "bg-cyan-200" }, { name: "Tang", start: 618, end: 907, color: "bg-sky-200" }, { name: "Five Dyn", start: 907, end: 960, color: "bg-blue-200" }, { name: "Song", start: 960, end: 1279, color: "bg-indigo-200" }, { name: "Yuan", start: 1271, end: 1368, color: "bg-violet-200" }, { name: "Ming", start: 1368, end: 1644, color: "bg-purple-200" }, { name: "Qing", start: 1644, end: 1912, color: "bg-fuchsia-200" }, { name: "ROC/PRC", start: 1912, end: 2050, color: "bg-pink-200" }],
             "united kingdom": [{ name: "Roman Britain", start: 43, end: 410, color: "bg-rose-200" }, { name: "Anglo-Saxon", start: 410, end: 1066, color: "bg-pink-200" }, { name: "Middle Ages", start: 1066, end: 1485, color: "bg-fuchsia-200" }, { name: "Tudor/Stuart", start: 1485, end: 1714, color: "bg-purple-200" }, { name: "British Empire", start: 1714, end: 1914, color: "bg-violet-200" }, { name: "Modern Era", start: 1914, end: 2050, color: "bg-indigo-200" }],
             "france": [{ name: "Gaul/Roman", start: -50, end: 486, color: "bg-blue-200" }, { name: "Middle Ages", start: 486, end: 1453, color: "bg-cyan-200" }, { name: "Early Modern", start: 1453, end: 1789, color: "bg-teal-200" }, { name: "Revolution/Empire", start: 1789, end: 1870, color: "bg-red-200" }, { name: "Republics", start: 1870, end: 2050, color: "bg-emerald-200" }],
-            "united states": [{ name: "Pre-Columbian", start: -15000, end: 1492, color: "bg-amber-100" }, { name: "Colonial Era", start: 1492, end: 1776, color: "bg-orange-200" }, { name: "Early Nation/Civil War", start: 1776, end: 1865, color: "bg-red-200" }, { name: "Industrial Era", start: 1865, end: 1918, color: "bg-stone-300" }, { name: "Global Superpower", start: 1918, end: 2050, color: "bg-blue-200" }],
+            "united states": [{ name: "Pre-Columbian", start: -15000, end: 1492, color: "bg-amber-100" }, { name: "Colonial Era", start: 1492, end: 1776, color: "bg-orange-200" }, { name: "Early Nation/Civil War", start: 1776, end: 1865, color: "bg-red-200" }, { name: "Industrial Era", start: 1865, end: 1918, color: "bg-sky-300" }, { name: "Global Superpower", start: 1918, end: 2050, color: "bg-blue-200" }],
             "mexico": [{ name: "Pre-Columbian", start: -2000, end: 1521, color: "bg-green-200" }, { name: "Colonial Era", start: 1521, end: 1810, color: "bg-yellow-200" }, { name: "Independence", start: 1810, end: 1920, color: "bg-orange-200" }, { name: "Modern Era", start: 1920, end: 2050, color: "bg-red-200" }],
-            "egypt": [{ name: "Ancient Egypt", start: -3100, end: -332, color: "bg-amber-300" }, { name: "Greco-Roman", start: -332, end: 641, color: "bg-orange-200" }, { name: "Islamic Era", start: 641, end: 1517, color: "bg-emerald-200" }, { name: "Ottoman Rule", start: 1517, end: 1882, color: "bg-red-200" }, { name: "Modern Era", start: 1882, end: 2050, color: "bg-zinc-300" }],
+            "egypt": [{ name: "Ancient Egypt", start: -3100, end: -332, color: "bg-amber-300" }, { name: "Greco-Roman", start: -332, end: 641, color: "bg-orange-200" }, { name: "Islamic Era", start: 641, end: 1517, color: "bg-emerald-200" }, { name: "Ottoman Rule", start: 1517, end: 1882, color: "bg-red-200" }, { name: "Modern Era", start: 1882, end: 2050, color: "bg-cyan-300" }],
             "south africa": [{ name: "Pre-Colonial", start: -2000, end: 1652, color: "bg-lime-200" }, { name: "Colonial Era", start: 1652, end: 1910, color: "bg-green-200" }, { name: "Union & Apartheid", start: 1910, end: 1994, color: "bg-orange-200" }, { name: "Post-Apartheid", start: 1994, end: 2050, color: "bg-teal-200" }],
             "india": [{ name: "Indus Valley", start: -2500, end: -1500, color: "bg-orange-200" }, { name: "Vedic Period", start: -1500, end: -500, color: "bg-amber-200" }, { name: "Empires", start: -500, end: 600, color: "bg-yellow-200" }, { name: "Medieval", start: 600, end: 1526, color: "bg-lime-200" }, { name: "Mughal Empire", start: 1526, end: 1858, color: "bg-green-200" }, { name: "British Raj", start: 1858, end: 1947, color: "bg-red-200" }, { name: "Republic", start: 1947, end: 2050, color: "bg-blue-200" }]
         };
@@ -374,9 +348,7 @@
         const timelineContainer = document.getElementById('timelineContainer');
         const timelineInteractive = document.getElementById('timelineInteractive');
         const yearSlider = document.getElementById('yearSlider');
-        const currentYearDisplay = document.getElementById('currentYearDisplay');
-        const yearDisplayWrapper = document.getElementById('yearDisplayWrapper');
-        const yearInput          = document.getElementById('yearInput');
+        const yearInput = document.getElementById('yearInput');
         const minYearLabel = document.getElementById('minYearLabel');
         const maxYearLabel = document.getElementById('maxYearLabel');
         const windowBtn      = document.getElementById('windowBtn');
@@ -384,90 +356,13 @@
         const windowMenu     = document.getElementById('windowMenu');
         let   selectedWindow = 50;
 
-        // ── Editable Year ──────────────────────────────────────────────
-        function parseYearInput(raw) {
-            if (!raw || !String(raw).trim()) return null;
-            let s = String(raw).trim().toUpperCase();
-            s = s.replace(/^C\.?\s*/i, '');
-            const isBC = /\b(BCE?|BC)\b/.test(s) || /^-\d/.test(s.trim());
-            const match = s.match(/-?\d+/);
-            if (!match) return null;
-            let val = parseInt(match[0], 10);
-            if (Number.isNaN(val)) return null;
-            if (val < 0) return val;
-            return isBC ? -Math.abs(val) : val;
-        }
-
-        function syncYearInput(year) {
-            if (document.activeElement === yearInput) return;
-            currentYearDisplay.textContent = formatYear(year);
-        }
-
-        function ensureYearInViewport(targetYear) {
-            if (targetYear >= minYear && targetYear <= maxYear) return;
-            const span = maxYear - minYear;
-            let newMin = targetYear - Math.floor(span / 2);
-            let newMax = newMin + span;
-            if (newMin < globalMinYear) { newMin = globalMinYear; newMax = Math.min(globalMaxYear, newMin + span); }
-            if (newMax > globalMaxYear) { newMax = globalMaxYear; newMin = Math.max(globalMinYear, newMax - span); }
-            minYear = newMin; maxYear = newMax;
-            yearSlider.min = minYear; yearSlider.max = maxYear;
-            minYearLabel.textContent = formatYear(minYear);
-            maxYearLabel.textContent = formatYear(maxYear);
-            renderTimelineBands(); drawSpikes(); renderYearAxis();
-        }
-
-        function jumpToYear(targetYear) {
-            if (!eventsData.length || yearSlider.disabled) return;
-            targetYear = Math.round(Math.max(globalMinYear, Math.min(globalMaxYear, targetYear)));
-            ensureYearInViewport(targetYear);
-            windowCenterYear = targetYear;
-            yearSlider.value = targetYear;
-            syncYearInput(targetYear);
-            listScrollBehavior = 'smooth';
-            updateVisualization();
-        }
-
-        function applyYearInput() {
-            if (yearInput.classList.contains('hidden')) return;
-            yearInput.classList.add('hidden');
-            currentYearDisplay.classList.remove('hidden');
-            if (!eventsData.length) return;
-            const parsed = parseYearInput(yearInput.value);
-            if (parsed === null) { syncYearInput(parseInt(yearSlider.value, 10)); return; }
-            jumpToYear(parsed);
-        }
-
-        function showYearInput() {
-            if (yearSlider.disabled) return;
-            yearInput.value = formatYear(parseInt(yearSlider.value, 10));
-            currentYearDisplay.classList.add('hidden');
-            yearInput.classList.remove('hidden');
-            yearInput.select();
-            yearInput.focus();
-        }
-
-        yearDisplayWrapper.addEventListener('click', () => {
-            if (!yearInput.classList.contains('hidden')) return;
-            showYearInput();
-        });
-        yearInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter')  { applyYearInput(); e.preventDefault(); }
-            if (e.key === 'Escape') {
-                yearInput.classList.add('hidden');
-                currentYearDisplay.classList.remove('hidden');
-            }
-        });
-        yearInput.addEventListener('blur', applyYearInput);
-        // ──────────────────────────────────────────────────────────────
-
         const windowOptions = [
-            { value: 0,   label: 'Exact Year',   shortLabel: 'Exact' },
-            { value: 10,  label: '± 10 years',   shortLabel: '±10'   },
-            { value: 25,  label: '± 25 years',   shortLabel: '±25'   },
-            { value: 50,  label: '± 50 years',   shortLabel: '±50'   },
-            { value: 100, label: '± 100 years',  shortLabel: '±100'  },
-            { value: 500, label: '± 500 years',  shortLabel: '±500'  },
+            { value: 0,   label: 'Exact Year'  },
+            { value: 10,  label: '± 10 Years'  },
+            { value: 25,  label: '± 25 Years'  },
+            { value: 50,  label: '± 50 Years'  },
+            { value: 100, label: '± 100 Years' },
+            { value: 500, label: '± 500 Years' },
         ];
 
         function buildWindowMenu() {
@@ -480,13 +375,12 @@
                 item.addEventListener('click', (e) => {
                     e.stopPropagation();
                     selectedWindow = opt.value;
-                    windowBtnLabel.textContent = opt.shortLabel;
+                    windowBtnLabel.textContent = opt.label;
                     windowMenu.classList.add('hidden');
                     windowMenu.querySelectorAll('button').forEach(b => {
-                        const active = b === item;
-                        b.classList.toggle('bg-blue-50', active);
-                        b.classList.toggle('text-blue-700', active);
-                        b.classList.toggle('font-semibold', active);
+                        b.classList.toggle('bg-blue-50', b === item);
+                        b.classList.toggle('text-blue-700', b === item);
+                        b.classList.toggle('font-semibold', b === item);
                     });
                     updateVisualization();
                 });
@@ -531,13 +425,6 @@
         const spikesAboveContainer = document.getElementById('spikesAboveContainer');
         const spikesBelowContainer = document.getElementById('spikesBelowContainer');
         const connectingDotsContainer = document.getElementById('connectingDotsContainer');
-
-        // List ↔ Timeline scroll sync state
-        let suppressListScrollSync = false;
-        let listScrollRaf = null;
-        let pendingScrollCenterEventId = null;
-        let lastListScrollYear = null;
-        let listScrollBehavior = 'auto';
         
         const chinaOnlyToggle = document.getElementById('chinaOnlyToggle');
         const parallelToggle = document.getElementById('parallelToggle');
@@ -550,7 +437,7 @@
         function setCategorySelection(value, emoji, label) {
             selectedCategory       = value;
             categoryBtnEmoji.textContent = emoji;
-            categoryBtnLabel.textContent = (value === 'All') ? 'All' : label;
+            categoryBtnLabel.textContent = label;
             categoryMenu.classList.add('hidden');
             drawSpikes();
             updateVisualization();
@@ -576,7 +463,7 @@
         const closeWikiBtn = document.getElementById('closeWikiBtn');
         let currentWikiQuery = null;
         let wikiDebounceTimer = null;
-        let isWikiClosedByUser = true;
+        let isWikiClosedByUser = false;
 
         // Parallel View Elements
         const parallelView = document.getElementById('parallelView');
@@ -697,6 +584,71 @@
             return isBC ? -val : val;
         }
 
+        function parseYearInput(raw) {
+            if (!raw || !String(raw).trim()) return null;
+            let s = String(raw).trim().toUpperCase();
+            s = s.replace(/^C\.?\s*/i, '');
+            const isBC = /\b(BCE?|BC)\b/.test(s) || /^-\d/.test(s.trim());
+            const match = s.match(/-?\d+/);
+            if (!match) return null;
+            let val = parseInt(match[0], 10);
+            if (Number.isNaN(val)) return null;
+            if (val < 0) return val;
+            return isBC ? -Math.abs(val) : val;
+        }
+
+        function syncYearInput(year) {
+            if (!yearInput || document.activeElement === yearInput) return;
+            yearInput.value = formatYear(year);
+        }
+
+        function ensureYearInViewport(targetYear) {
+            if (targetYear >= minYear && targetYear <= maxYear) return;
+            const span = maxYear - minYear;
+            let newMin = targetYear - Math.floor(span / 2);
+            let newMax = newMin + span;
+            if (newMin < globalMinYear) {
+                newMin = globalMinYear;
+                newMax = Math.min(globalMaxYear, newMin + span);
+            }
+            if (newMax > globalMaxYear) {
+                newMax = globalMaxYear;
+                newMin = Math.max(globalMinYear, newMax - span);
+            }
+            minYear = newMin;
+            maxYear = newMax;
+            yearSlider.min = minYear;
+            yearSlider.max = maxYear;
+            minYearLabel.textContent = formatYear(minYear);
+            maxYearLabel.textContent = formatYear(maxYear);
+            renderTimelineBands();
+            drawSpikes();
+            renderYearAxis();
+        }
+
+        function jumpToYear(targetYear) {
+            if (!eventsData.length || yearSlider.disabled) return;
+            targetYear = Math.round(Math.max(globalMinYear, Math.min(globalMaxYear, targetYear)));
+
+            ensureYearInViewport(targetYear);
+
+            windowCenterYear = targetYear;
+            yearSlider.value = targetYear;
+            syncYearInput(targetYear);
+            listScrollBehavior = 'smooth';
+            updateVisualization();
+        }
+
+        function applyYearInput() {
+            if (!yearInput || yearInput.disabled || !eventsData.length) return;
+            const parsed = parseYearInput(yearInput.value);
+            if (parsed === null) {
+                syncYearInput(parseInt(yearSlider.value, 10));
+                return;
+            }
+            jumpToYear(parsed);
+        }
+
         function getCoordinates(countryName, placeName) {
             if (!countryName) return null;
             let cName = String(countryName).toLowerCase().trim();
@@ -754,13 +706,23 @@
             return item;
         }
 
+        // Intelligent scroll logic to find specific events when markers or other lists are clicked
+        let suppressListScrollSync = false;
+        let listScrollRaf = null;
+        let pendingScrollCenterEventId = null;
+        let lastListScrollYear = null;
+        let listScrollBehavior = 'auto';
+
         function findNearestEventForYear(targetYear, events) {
             if (!events || !events.length) return null;
             let best = events[0];
             let bestDist = Math.abs(events[0].numYear - targetYear);
             for (let i = 1; i < events.length; i++) {
                 const dist = Math.abs(events[i].numYear - targetYear);
-                if (dist < bestDist) { bestDist = dist; best = events[i]; }
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    best = events[i];
+                }
             }
             return best;
         }
@@ -769,6 +731,7 @@
             if (!events.length || parallelToggle.checked) return;
             const nearest = findNearestEventForYear(targetYear, events);
             if (!nearest) return;
+
             suppressListScrollSync = true;
             requestAnimationFrame(() => {
                 const targetEl = document.getElementById(`list-item-${nearest.id}`);
@@ -792,7 +755,10 @@
             items.forEach(item => {
                 const r = item.getBoundingClientRect();
                 const dist = Math.abs(r.top + r.height / 2 - centerY);
-                if (dist < bestDist) { bestDist = dist; best = item; }
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    best = item;
+                }
             });
             if (!best) return null;
             const eventId = best.id.replace('list-item-', '');
@@ -805,9 +771,11 @@
             if (suppressListScrollSync || parallelToggle.checked || yearSlider.disabled) return;
             const center = getCenterListEvent();
             if (!center) return;
+
             pendingScrollCenterEventId = center.eventId;
             if (center.year === lastListScrollYear) return;
             lastListScrollYear = center.year;
+
             const targetYear = Math.round(Math.max(globalMinYear, Math.min(globalMaxYear, center.year)));
             yearSlider.value = targetYear;
             syncYearInput(targetYear);
@@ -819,7 +787,6 @@
             listScrollRaf = requestAnimationFrame(syncTimelineToListScroll);
         }
 
-        // Intelligent scroll logic to find specific events when markers or other lists are clicked
         function scrollToEvent(eventId) {
             suppressListScrollSync = true;
             // Short timeout ensures DOM has rendered if a filter change triggered a list rebuild
@@ -835,7 +802,7 @@
 
                 if (targetEl) {
                     targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
+                    
                     // Flash effect to highlight the element
                     targetEl.classList.add('ring-4', 'ring-blue-400', 'scale-[1.02]', 'z-10');
                     setTimeout(() => {
@@ -843,7 +810,7 @@
                     }, 1500);
                 }
                 setTimeout(() => { suppressListScrollSync = false; }, 700);
-            }, 100);
+            }, 100); 
         }
 
         // Draw a quadratic-bezier curved dashed arc between two lat/lng points
@@ -874,7 +841,7 @@
                 const primary = ev.allCoords[0];
                 for (let i = 1; i < ev.allCoords.length; i++) {
                     const secondary = ev.allCoords[i];
-                    const arc = curvedArc(primary, secondary, { color: '#e11d48', weight: 2.5, opacity: 0.75, dashArray: '10, 7', lineCap: 'round' });
+                    const arc = curvedArc(primary, secondary, { color: '#e11d48', weight: 2.5, opacity: 0.8, dashArray: '10, 7', lineCap: 'round' });
                     arc.addTo(targetLayer);
                     // Add flowing-dash animation once the SVG path is in the DOM
                     arc.on('add', () => { const el = arc.getElement(); if (el) el.classList.add('animated-route'); });
@@ -943,18 +910,18 @@
             wikiPanel.classList.add('flex');
             setTimeout(() => { if (map) map.invalidateSize(); }, 300);
 
-            wikiContent.innerHTML = `<div class="flex flex-col justify-center items-center h-48 space-y-4"><div class="animate-spin rounded-full h-10 w-10 border-4 border-slate-200 border-t-blue-500"></div><p class="text-sm text-slate-500">Searching Wikipedia for "${ev.title}"...</p></div>`;
+            wikiContent.innerHTML = `<div class="flex flex-col justify-center items-center h-48 space-y-4"><div class="animate-spin rounded-full h-10 w-10 border-4 border-slate-200 border-t-blue-500"></div><p class="text-sm text-slate-600">Searching Wikipedia for "${ev.title}"...</p></div>`;
 
             const data = await fetchWikiData(ev);
             
             if (!data) {
-                wikiContent.innerHTML = `<div class="text-center mt-10"><p class="text-slate-500">No Wikipedia article found for <strong>"${ev.title}"</strong>.</p></div>`;
+                wikiContent.innerHTML = `<div class="text-center mt-10"><p class="text-slate-600">No Wikipedia article found for <strong>"${ev.title}"</strong>.</p></div>`;
                 return;
             }
 
-            let html = `<h3 class="text-2xl font-serif font-bold text-slate-900 mb-1">${data.title}</h3><p class="text-sm text-slate-500 mb-5 italic">${data.description || ''}</p>`;
-            if (data.thumbnail) html += `<img src="${data.thumbnail}" class="w-full object-contain rounded-xl mb-5 shadow-sm" alt="${data.title}">`;
-            html += `<div class="text-slate-700 text-sm leading-relaxed mb-6 space-y-3">${data.extract_html}</div><a href="${data.page}" target="_blank" class="inline-flex items-center space-x-2 text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold transition-colors shadow"><span>Read full article on Wikipedia</span></a>`;
+            let html = `<h3 class="text-2xl font-serif font-bold text-slate-900 mb-1">${data.title}</h3><p class="text-sm text-slate-600 mb-5 italic">${data.description || ''}</p>`;
+            if (data.thumbnail) html += `<img src="${data.thumbnail}" class="w-full object-contain rounded-xl mb-5 shadow-sm border border-slate-100" alt="${data.title}">`;
+            html += `<div class="text-slate-600 text-sm leading-relaxed mb-6 space-y-3">${data.extract_html}</div><a href="${data.page}" target="_blank" class="inline-flex items-center space-x-2 px-4 py-2 rounded-lg font-semibold transition-colors shadow text-white bg-blue-600 hover:bg-blue-700"><span>Read full article on Wikipedia</span></a>`;
             wikiContent.innerHTML = html;
 
             // Cap portrait images to 1.1× the height a landscape (4:3) photo would occupy
@@ -1100,7 +1067,7 @@
             // Build custom category dropdown
             selectedCategory = 'All';
             categoryBtnEmoji.textContent = '🗂️';
-            categoryBtnLabel.textContent = 'All';
+            categoryBtnLabel.textContent = 'All Categories';
             categoryMenu.innerHTML = '';
             const allItem = buildCategoryMenuItem('All', '🗂️', 'All Categories');
             categoryMenu.appendChild(allItem);
@@ -1112,12 +1079,15 @@
             eventsData.sort((a, b) => a.numYear - b.numYear);
             globalMinYear = Math.min(...validYears);
             globalMaxYear = Math.max(...validYears);
+
             selectedWindow = 50;
-            windowBtnLabel.textContent = '±50';
-            minYear = globalMinYear; maxYear = globalMaxYear;
+            windowBtnLabel.textContent = '± 50 Years';
+
+            minYear = globalMinYear;
+            maxYear = globalMaxYear;
             windowCenterYear = Math.max(globalMinYear, Math.min(globalMaxYear, 0));
             yearSlider.value = windowCenterYear;
-
+            
             yearSlider.disabled = false; yearInput.disabled = false; playBtn.disabled = false; chinaOnlyToggle.disabled = false; categoryBtn.disabled = false; parallelToggle.disabled = false;
             updateTimelineBounds();
         }
@@ -1130,7 +1100,7 @@
             if (currentVal > maxYear) yearSlider.value = maxYear;
             if (windowCenterYear < minYear) windowCenterYear = minYear;
             if (windowCenterYear > maxYear) windowCenterYear = maxYear;
-
+            
             minYearLabel.textContent = formatYear(minYear);
             maxYearLabel.textContent = formatYear(maxYear);
             
@@ -1163,7 +1133,7 @@
                     const bandColor = muted
                         ? bottomTrackMutedPalette[mutedIdx++ % bottomTrackMutedPalette.length]
                         : p.color;
-
+                    
                     let div = document.createElement('div');
                     div.className = `absolute h-full flex items-center justify-center border-r ${muted ? 'border-slate-300/80' : 'border-white/50'} overflow-hidden text-xs font-bold text-slate-800/90 select-none px-1 leading-tight ${muted ? '' : 'shadow-sm'} ${bandColor}`;
                     div.style.left = `${startPct}%`; div.style.width = `${widthPct}%`;
@@ -1346,9 +1316,9 @@
                 <div class="p-3 flex-1 flex flex-col justify-center">
                     <div class="flex justify-between items-start mb-1">
                         <h3 class="text-sm font-bold text-slate-800 leading-tight pr-2">${ev.title}</h3>
-                        <span class="text-xs font-bold whitespace-nowrap bg-slate-100 px-2 py-1 rounded text-slate-600">${ev.rawYear}</span>
+                        <span class="text-xs font-bold whitespace-nowrap bg-slate-100 px-2 py-1 rounded text-slate-600 font-bold whitespace-nowrap px-2 py-1 rounded">${ev.rawYear}</span>
                     </div>
-                    <p class="text-[10px] text-slate-500 font-bold mb-1">${ev.region}</p>
+                    <p class="text-[10px] text-slate-400 font-bold mb-1">${ev.region}</p>
                     ${ev.impact ? `<p class="text-[11px] text-slate-600 mb-2 line-clamp-2">${ev.impact}</p>` : ''}
                 </div>`;
             el.addEventListener('click', () => {
@@ -1437,7 +1407,7 @@
             const selectedCat = selectedCategory;
             syncYearInput(cursorYear);
             updateWindowBracket();
-
+            
             const startYear = windowCenterYear - windowSize;
             const endYear = windowCenterYear + windowSize;
 
@@ -1451,11 +1421,11 @@
             if (isParallelMode) {
                 parallelView.classList.remove('hidden');
                 parallelView.classList.add('flex');
-                mainSidebar.classList.add('hidden');
-
+                mainSidebar.classList.add('hidden'); 
+                
                 const leftEvents = [];
                 const rightEvents = [];
-
+                
                 baseActiveEvents.forEach(ev => {
                     const isChina = hasChina(ev);
                     if (isChina) {
@@ -1466,13 +1436,13 @@
                         }
                     }
                 });
-
+                
                 renderParallelRows(leftEvents, rightEvents);
 
                 parallelLeftCount.textContent = leftEvents.length;
                 parallelRightCount.textContent = rightEvents.length;
                 parallelRightTitle.textContent = (selectedCountry ? '📍 ' + selectedCountry.toUpperCase() : '🌍 WORLD');
-
+                
             } else {
                 parallelView.classList.add('hidden');
                 parallelView.classList.remove('flex');
@@ -1491,12 +1461,14 @@
                 });
 
                 const listEvents = mapEvents.slice().sort((a, b) => a.numYear - b.numYear);
-
+                
                 markersLayer.clearLayers(); activeLinesLayer.clearLayers();
                 eventCount.textContent = listEvents.length;
 
                 clearTimeout(wikiDebounceTimer);
-                if (listEvents.length === 0) { currentWikiQuery = null; }
+                if (listEvents.length === 0) {
+                    currentWikiQuery = null;
+                }
 
                 const listFragment = document.createDocumentFragment();
                 if (listEvents.length === 0) {
@@ -1508,87 +1480,88 @@
 
                 const clusteredPrimary = {};
                 if (listEvents.length > 0) {
-                    mapEvents.forEach(ev => {
-                        if (ev.allCoords && ev.allCoords.length > 0) {
-                            const pKey = `${ev.allCoords[0][0]},${ev.allCoords[0][1]}`;
-                            if (!clusteredPrimary[pKey]) clusteredPrimary[pKey] = { latlng: ev.allCoords[0], events: [] };
-                            clusteredPrimary[pKey].events.push(ev);
-                        } else if (ev.latlng) {
-                            const key = `${ev.latlng[0]},${ev.latlng[1]}`;
-                            if (!clusteredPrimary[key]) clusteredPrimary[key] = { latlng: ev.latlng, events: [] };
-                            clusteredPrimary[key].events.push(ev);
-                        }
+                mapEvents.forEach(ev => {
+                    if (ev.allCoords && ev.allCoords.length > 0) {
+                        const pKey = `${ev.allCoords[0][0]},${ev.allCoords[0][1]}`;
+                        if (!clusteredPrimary[pKey]) clusteredPrimary[pKey] = { latlng: ev.allCoords[0], events: [] };
+                        clusteredPrimary[pKey].events.push(ev);
+                    } else if (ev.latlng) {
+                        const key = `${ev.latlng[0]},${ev.latlng[1]}`;
+                        if (!clusteredPrimary[key]) clusteredPrimary[key] = { latlng: ev.latlng, events: [] };
+                        clusteredPrimary[key].events.push(ev);
+                    }
+                });
+
+                Object.values(clusteredPrimary).forEach(cluster => {
+                    const count = cluster.events.length;
+                    const radius = 18;
+                    const emoji = getCategoryEmoji(cluster.events[0].category);
+
+                    const iconHtml = `<div class="flex items-center justify-center w-full h-full transition-transform hover:scale-125" style="font-size: ${radius*1.5}px; line-height: 1; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5)); text-shadow: 0px 0px 4px rgba(255,255,255,0.8);">${emoji}</div>`;
+                    
+                    const sectorIcon = L.divIcon({
+                        html: iconHtml,
+                        className: 'bg-transparent', 
+                        iconSize: [radius*2, radius*2],
+                        iconAnchor: [radius, radius],
+                        popupAnchor: [0, -radius]
                     });
 
-                    Object.values(clusteredPrimary).forEach(cluster => {
-                        const count = cluster.events.length;
-                        const radius = 18;
-                        const emoji = getCategoryEmoji(cluster.events[0].category);
+                    const marker = L.marker(cluster.latlng, { icon: sectorIcon }).addTo(markersLayer);
 
-                        const iconHtml = `<div class="flex items-center justify-center w-full h-full transition-transform hover:scale-125" style="font-size: ${radius*1.5}px; line-height: 1; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5)); text-shadow: 0px 0px 4px rgba(255,255,255,0.8);">${emoji}</div>`;
-
-                        const sectorIcon = L.divIcon({
-                            html: iconHtml,
-                            className: 'bg-transparent',
-                            iconSize: [radius*2, radius*2],
-                            iconAnchor: [radius, radius],
-                            popupAnchor: [0, -radius]
-                        });
-
-                        const marker = L.marker(cluster.latlng, { icon: sectorIcon }).addTo(markersLayer);
-
-                        let popupHtml = `<div class="max-h-64 overflow-y-auto w-64 pr-2"><h3 class="font-bold text-slate-800 border-b border-slate-100 pb-2 mb-2 sticky top-0 bg-white">${cluster.events[0].region} <span class="text-sm font-normal text-slate-400">(${count} Event${count>1?'s':''})</span></h3>`;
-                        cluster.events.forEach(ev => {
-                            popupHtml += `<div class="mb-3 pb-3 border-b border-slate-100 last:border-0 last:mb-0 last:pb-0"><h4 class="font-semibold text-sm text-blue-700 leading-tight mb-1">${ev.title}</h4><div class="flex items-center gap-2 mb-1"><span class="text-xs font-bold text-slate-400">${ev.rawYear}</span></div><p class="text-xs text-slate-600"><strong>Category:</strong> ${ev.category}</p>${ev.impact ? `<p class="text-xs text-slate-600 mt-1 line-clamp-3" title="${ev.impact}">${ev.impact}</p>` : ''}</div>`;
-                        });
-                        popupHtml += `</div>`;
-                        marker.bindPopup(popupHtml);
-
-                        marker.on('click', (e) => {
-                            L.DomEvent.stopPropagation(e);
-                            activeLinesLayer.clearLayers();
-
-                            let allClusterCoords = [];
-                            cluster.events.forEach(ev => { drawEventLines(ev, activeLinesLayer); if (ev.allCoords) allClusterCoords.push(...ev.allCoords); });
-
-                            const uniqueLocs = new Set(allClusterCoords.map(c => `${c[0]},${c[1]}`));
-                            if (uniqueLocs.size > 1) { map.flyToBounds(L.latLngBounds(allClusterCoords), { padding: [50, 50], maxZoom: 5 }); }
-                            else { map.flyTo(cluster.latlng, 5); }
-
-                            clearTimeout(wikiDebounceTimer);
-                            isWikiClosedByUser = false;
-                            loadWikipediaSummary(cluster.events[0]);
-                            scrollToEvent(cluster.events[0].id);
-                        });
+                    let popupHtml = `<div class="max-h-64 overflow-y-auto w-64 pr-2"><h3 class="font-bold text-slate-800 border-b border-slate-100 pb-2 mb-2 sticky top-0" class="bg-white">${cluster.events[0].region} <span class="text-sm font-normal text-slate-400">(${count} Event${count>1?'s':''})</span></h3>`;
+                    cluster.events.forEach(ev => {
+                        popupHtml += `<div class="mb-3 pb-3 border-b border-slate-100 last:border-0 last:mb-0 last:pb-0"><h4 class="font-semibold text-sm text-blue-700 leading-tight mb-1">${ev.title}</h4><div class="flex items-center gap-2 mb-1"><span class="text-xs font-bold text-slate-400">${ev.rawYear}</span></div><p class="text-xs text-slate-600"><strong>Category:</strong> ${ev.category}</p>${ev.impact ? `<p class="text-xs text-slate-600 mt-1 line-clamp-3" title="${ev.impact}">${ev.impact}</p>` : ''}</div>`;
                     });
+                    popupHtml += `</div>`;
+                    marker.bindPopup(popupHtml);
 
-                    listEvents.forEach(ev => {
-                        const el = document.createElement('div');
-                        el.id = `list-item-${ev.id}`;
-                        el.dataset.year = String(ev.numYear);
-                        const emoji = getCategoryEmoji(ev.category);
-                        el.className = 'bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-all cursor-pointer';
-                        el.innerHTML = `<div class="flex justify-between items-start mb-1 gap-2"><div class="flex items-start gap-2 flex-1 min-w-0"><span class="text-lg leading-none shrink-0 mt-0.5" aria-hidden="true">${emoji}</span><h3 class="text-sm font-bold text-slate-800 leading-tight">${ev.title}</h3></div><span class="text-xs font-bold whitespace-nowrap bg-slate-100 px-2 py-1 rounded text-slate-600 shrink-0">${ev.rawYear}</span></div><div class="flex items-center gap-2 mb-2 text-xs"><span class="font-medium text-slate-400 flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>${ev.allCountries && ev.allCountries.length > 0 ? ev.allCountries.join(', ') : ev.region}</span></div>${ev.impact ? `<p class="text-xs text-slate-600 mb-2">${ev.impact}</p>` : ''}<div class="flex items-center mt-2 pt-2 border-t border-slate-100"><span class="text-[10px] uppercase font-semibold text-slate-400">${ev.category}</span></div>`;
+                    marker.on('click', (e) => {
+                        L.DomEvent.stopPropagation(e); 
+                        activeLinesLayer.clearLayers(); 
+                        
+                        let allClusterCoords = [];
+                        cluster.events.forEach(ev => { drawEventLines(ev, activeLinesLayer); if (ev.allCoords) allClusterCoords.push(...ev.allCoords); });
 
-                        el.addEventListener('click', () => {
-                            activeLinesLayer.clearLayers();
-                            drawEventLines(ev, activeLinesLayer);
-                            if (ev.allCoords && ev.allCoords.length > 1) { map.flyToBounds(L.latLngBounds(ev.allCoords), { padding: [50, 50], maxZoom: 5 }); }
-                            else if (ev.latlng) { map.flyTo(ev.latlng, 5); }
-
-                            clearTimeout(wikiDebounceTimer);
-                            isWikiClosedByUser = false;
-                            loadWikipediaSummary(ev);
-                            scrollToEvent(ev.id);
-                        });
-
-                        listFragment.appendChild(el);
+                        const uniqueLocs = new Set(allClusterCoords.map(c => `${c[0]},${c[1]}`));
+                        if (uniqueLocs.size > 1) { map.flyToBounds(L.latLngBounds(allClusterCoords), { padding: [50, 50], maxZoom: 5 }); } 
+                        else { map.flyTo(cluster.latlng, 5); }
+                        
+                        // We intentionally DO NOT update the bottom focus timeline when an emoji is clicked.
+                        
+                        clearTimeout(wikiDebounceTimer); // Prevent auto-loader overwrite
+                        isWikiClosedByUser = false; 
+                        loadWikipediaSummary(cluster.events[0]);
+                        scrollToEvent(cluster.events[0].id);
                     });
+                });
+
+                listEvents.forEach(ev => {
+                    const el = document.createElement('div');
+                    el.id = `list-item-${ev.id}`;
+                    el.dataset.year = String(ev.numYear);
+                    const emoji = getCategoryEmoji(ev.category);
+                    el.className = 'bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-all cursor-pointer';
+                    el.innerHTML = `<div class="flex justify-between items-start mb-1 gap-2"><div class="flex items-start gap-2 flex-1 min-w-0"><span class="text-lg leading-none shrink-0 mt-0.5" aria-hidden="true">${emoji}</span><h3 class="text-sm font-bold text-slate-800 leading-tight">${ev.title}</h3></div><span class="text-xs font-bold whitespace-nowrap bg-slate-100 px-2 py-1 rounded text-slate-600 font-bold whitespace-nowrap px-2 py-1 rounded shrink-0">${ev.rawYear}</span></div><div class="flex items-center gap-2 mb-2 text-xs"><span class="font-medium text-slate-400 flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>${ev.allCountries && ev.allCountries.length > 0 ? ev.allCountries.join(', ') : ev.region}</span></div>${ev.impact ? `<p class="text-xs text-slate-600 mb-2">${ev.impact}</p>` : ''}<div class="flex items-center mt-2 pt-2 border-t border-slate-100"><span class="text-[10px] uppercase font-semibold text-slate-400">${ev.category}</span></div>`;
+                    
+                    el.addEventListener('click', () => {
+                        activeLinesLayer.clearLayers();
+                        drawEventLines(ev, activeLinesLayer);
+                        if (ev.allCoords && ev.allCoords.length > 1) { map.flyToBounds(L.latLngBounds(ev.allCoords), { padding: [50, 50], maxZoom: 5 }); } 
+                        else if (ev.latlng) { map.flyTo(ev.latlng, 5); }
+
+                        clearTimeout(wikiDebounceTimer); // Prevent auto-loader overwrite
+                        isWikiClosedByUser = false;
+                        loadWikipediaSummary(ev);
+                        scrollToEvent(ev.id);
+                    });
+                    
+                    listFragment.appendChild(el);
+                });
                 }
 
                 eventsList.replaceChildren(listFragment);
                 if (listEvents.length > 0) {
-                    wikiDebounceTimer = setTimeout(() => { loadWikipediaSummary(listEvents[0]); }, 600);
                     scrollListToNearestYear(windowCenterYear, listEvents);
                 }
             }
@@ -1602,6 +1575,13 @@
             updateVisualization();
         });
         eventsList.addEventListener('scroll', onEventsListScroll, { passive: true });
+        yearInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                applyYearInput();
+            }
+        });
+        yearInput.addEventListener('blur', applyYearInput);
         chinaOnlyToggle.addEventListener('change', () => { drawSpikes(); updateVisualization(); });
         parallelToggle.addEventListener('change', updateVisualization);
 
@@ -1613,15 +1593,15 @@
         // Wheel to zoom
         timelineInteractive.addEventListener('wheel', (e) => {
             if (!eventsData.length || yearSlider.disabled) return;
-            e.preventDefault();
-            const zoomFactor = 0.20;
+            e.preventDefault(); 
+            const zoomFactor = 0.20; 
             const currentRange = maxYear - minYear;
             const zoomIn = e.deltaY < 0;
-            if (zoomIn && currentRange <= 20) return;
-            if (!zoomIn && minYear === globalMinYear && maxYear === globalMaxYear) return;
-
+            if (zoomIn && currentRange <= 20) return; 
+            if (!zoomIn && minYear === globalMinYear && maxYear === globalMaxYear) return; 
+            
             const rect = timelineInteractive.getBoundingClientRect();
-            const mousePct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            const mousePct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)); 
             const anchorYear = minYear + (currentRange * mousePct);
             
             let newRange = zoomIn ? currentRange * (1 - zoomFactor) : currentRange * (1 + zoomFactor);
@@ -1638,16 +1618,16 @@
         // Drag to pan or click to move timeline
         timelineInteractive.addEventListener('mousedown', (e) => {
             if (!eventsData.length || yearSlider.disabled) return;
-
+            
             const rect = yearSlider.getBoundingClientRect();
             const range = maxYear - minYear;
             const thumbPct = (yearSlider.value - minYear) / range;
             const thumbX = rect.left + (rect.width * thumbPct);
-
+            
             if (Math.abs(e.clientX - thumbX) > 15) {
-                e.preventDefault();
+                e.preventDefault(); 
                 isDraggingTimeline = true;
-                hasDraggedTimeline = false;
+                hasDraggedTimeline = false; 
                 startMouseX = e.clientX;
                 lastMouseX = e.clientX;
                 timelineInteractive.style.cursor = 'ew-resize';
@@ -1695,7 +1675,7 @@
                 isDraggingTimeline = false;
                 timelineInteractive.style.cursor = 'crosshair';
                 if (dragRafId) { cancelAnimationFrame(dragRafId); dragRafId = null; }
-
+                
                 if (!hasDraggedTimeline) {
                     const rect = timelineInteractive.getBoundingClientRect();
                     if (e.clientX >= rect.left && e.clientX <= rect.right) {
@@ -1704,7 +1684,7 @@
                         yearSlider.value = Math.round(clickedYear);
                         windowCenterYear = parseInt(yearSlider.value, 10);
                         listScrollBehavior = 'smooth';
-                        updateVisualization();
+                        updateVisualization(); 
                     }
                 }
             }
