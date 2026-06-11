@@ -26,7 +26,33 @@
         .leaflet-overlay-pane svg path.animated-route {
             animation: dashFlow 1.2s linear infinite;
         }
+        @keyframes countryPing {
+            0%   { transform: translate(-50%,-50%) scale(0.4); opacity: 0.85; }
+            100% { transform: translate(-50%,-50%) scale(2.6); opacity: 0; }
+        }
+        .country-ping {
+            position: absolute; width: 36px; height: 36px; border-radius: 50%;
+            border: 2.5px solid #3b82f6; background: rgba(59,130,246,0.18);
+            animation: countryPing 2s ease-out 1 forwards;
+            pointer-events: none;
+        }
+        .country-ping-dot {
+            position: absolute; width: 8px; height: 8px; border-radius: 50%;
+            background: #3b82f6; border: 2px solid white;
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.4);
+            transform: translate(-50%,-50%);
+            pointer-events: none;
+        }
         .leaflet-popup-content-wrapper { border-radius: 0.5rem; }
+        .cluster-hover-tooltip {
+            background: white !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.13) !important;
+            padding: 8px 10px !important;
+            font-family: inherit !important;
+        }
+        .cluster-hover-tooltip::before { display: none !important; }
 
         .custom-range { -webkit-appearance: none; appearance: none; background: transparent; }
         .custom-range:focus { outline: none; }
@@ -60,11 +86,11 @@
         }
         .timeline-tracks-wrap { height: 84px; left: 0; right: 0; overflow: visible; }
         .timeline-spikes-above {
-            position: absolute; left: 0; right: 0; top: -12px; height: 12px;
+            position: absolute; left: 0; right: 0; top: -10px; height: 10px;
             z-index: 10; pointer-events: none;
         }
         .timeline-spikes-below {
-            position: absolute; left: 0; right: 0; bottom: -12px; height: 12px;
+            position: absolute; left: 0; right: 0; bottom: -10px; height: 10px;
             z-index: 10; pointer-events: none;
         }
         .timeline-event-spike {
@@ -133,7 +159,10 @@
                 </div>
                 <div class="flex-1 bg-blue-50 text-blue-800 px-4 py-3 font-bold text-sm flex justify-between items-center">
                     <span id="parallelRightTitle">🌍 WORLD</span>
-                    <span id="parallelRightCount" class="bg-blue-200 text-blue-900 text-xs px-2 py-0.5 rounded-full">0</span>
+                    <div class="flex items-center gap-2">
+                        <span id="parallelRightCount" class="bg-blue-200 text-blue-900 text-xs px-2 py-0.5 rounded-full">0</span>
+                        <button id="parallelCloseBtn" title="Exit parallel mode" class="w-5 h-5 flex items-center justify-center rounded-full bg-slate-200 hover:bg-slate-300 text-slate-500 hover:text-slate-700 transition-colors text-xs font-bold leading-none">&times;</button>
+                    </div>
                 </div>
             </div>
             <!-- Single synchronized scrollable rows -->
@@ -158,7 +187,7 @@
 
                     <!-- Editable Year — click to type a year directly -->
                     <div id="yearDisplayWrapper" class="relative cursor-text group" title="Click to jump to any year">
-                        <span id="currentYearDisplay" class="text-2xl font-bold text-slate-800 tabular-nums select-none">----</span>
+                        <span id="currentYearDisplay" class="text-2xl font-bold text-slate-800 tabular-nums select-none border-b-2 border-dashed border-slate-300 group-hover:border-blue-400 transition-colors pb-0.5">----</span>
                         <input id="yearInput" type="text"
                             class="hidden text-2xl font-bold text-blue-600 tabular-nums w-32 border-0 border-b-2 border-blue-500 outline-none bg-transparent p-0"
                             placeholder="e.g. 1492 or 500 BC"
@@ -174,7 +203,7 @@
                 <!-- RIGHT: Filters + View toggles -->
                 <div class="flex items-center gap-1.5 shrink-0">
 
-                    <!-- Category Dropdown (no label prefix) -->
+                    <!-- Category Dropdown -->
                     <div id="categoryDropdown" class="relative">
                         <button id="categoryBtn" disabled
                             class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 hover:border-blue-400 hover:bg-white transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
@@ -218,14 +247,14 @@
                     <!-- Parallel Mode (button-style toggle) -->
                     <label class="flex items-center cursor-pointer select-none group" title="Compare China & World side-by-side">
                         <input type="checkbox" id="parallelToggle" class="sr-only peer" disabled>
-                        <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50
-                                    peer-checked:bg-indigo-50 peer-checked:border-indigo-400
+                        <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-600
+                                    peer-checked:bg-indigo-600 peer-checked:border-indigo-600 peer-checked:text-white peer-checked:shadow-md
                                     peer-disabled:opacity-40
                                     group-hover:border-blue-300 group-hover:bg-white transition-all">
-                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 0v10"/>
                             </svg>
-                            <span class="text-xs font-semibold text-slate-600">Parallel</span>
+                            <span class="text-xs font-semibold">Parallel</span>
                         </div>
                     </label>
 
@@ -237,16 +266,7 @@
                         </button>
                     </div>
                 </div>
-            </div>
 
-            <div class="border-b border-slate-200"></div>
-
-            <div class="flex items-center space-x-4 pt-1.5 pb-1">
-                <div class="w-16 shrink-0"></div>
-                <p class="timeline-hint flex-1 min-w-0 text-center text-[11px] font-bold tracking-wider text-indigo-500 uppercase pointer-events-none">
-                    Scroll to zoom • Click/Drag to pan
-                </p>
-                <div class="w-16 shrink-0"></div>
             </div>
 
             <div id="timelineFooterTimeline" class="flex items-center space-x-4">
@@ -294,6 +314,7 @@
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-polylinedecorator@1.6.0/dist/leaflet.polylineDecorator.min.js"></script>
     
     <script>
         // App State
@@ -301,7 +322,11 @@
         let countryCoordinates = {};
         let map;
         let markersLayer;
-        let activeLinesLayer; 
+        let activeLinesLayer;
+        let zhengheLayer = null;
+        let zhengheActiveEventId = null;
+        let countryHighlightLayer = null;
+        let clusterPanelTimer = null;
         let isPlaying = false;
         let playInterval;
         let minYear = 0;
@@ -310,6 +335,7 @@
         let globalMaxYear = 0;
         let windowCenterYear = 0;
         let selectedCountry = null;
+        let pendingCountry = null;
 
         const bottomTrackMutedPalette = [
             'bg-slate-200', 'bg-stone-300', 'bg-zinc-200', 'bg-neutral-300',
@@ -317,7 +343,10 @@
         ];
 
         // Wikipedia Global Cache
-        const wikiCache = new Map(); 
+        const wikiCache = new Map();
+
+        // Hover sync: event id → Leaflet marker
+        const eventToMarker = new Map();
 
         // Panning Variables
         let isDraggingTimeline = false;
@@ -399,7 +428,8 @@
         }
 
         function syncYearInput(year) {
-            if (document.activeElement === yearInput) return;
+            // Only skip when input is visible AND user is actively editing it
+            if (!yearInput.classList.contains('hidden') && document.activeElement === yearInput) return;
             currentYearDisplay.textContent = formatYear(year);
         }
 
@@ -515,7 +545,6 @@
             e.stopPropagation();
             buildWindowMenu();
             const isOpen = !windowMenu.classList.contains('hidden');
-            categoryMenu.classList.add('hidden');
             if (isOpen) { windowMenu.classList.add('hidden'); } else { openMenu(windowMenu, windowBtn); }
         });
         document.addEventListener('click', () => { windowMenu.classList.add('hidden'); });
@@ -535,6 +564,7 @@
         // List ↔ Timeline scroll sync state
         let suppressListScrollSync = false;
         let listScrollRaf = null;
+        let parallelScrollRaf = null;
         let pendingScrollCenterEventId = null;
         let lastListScrollYear = null;
         let listScrollBehavior = 'auto';
@@ -545,13 +575,39 @@
         const categoryBtnEmoji = document.getElementById('categoryBtnEmoji');
         const categoryBtnLabel = document.getElementById('categoryBtnLabel');
         const categoryMenu     = document.getElementById('categoryMenu');
-        let   selectedCategory = 'All';
+        let selectedCategories = new Set(); // empty = show all
 
-        function setCategorySelection(value, emoji, label) {
-            selectedCategory       = value;
-            categoryBtnEmoji.textContent = emoji;
-            categoryBtnLabel.textContent = (value === 'All') ? 'All' : label;
-            categoryMenu.classList.add('hidden');
+        function updateCategoryButton() {
+            if (selectedCategories.size === 0) {
+                categoryBtnEmoji.textContent = '🗂️';
+                categoryBtnLabel.textContent = 'All';
+            } else if (selectedCategories.size === 1) {
+                const cat = [...selectedCategories][0];
+                categoryBtnEmoji.textContent = getCategoryEmoji(cat);
+                categoryBtnLabel.textContent = cat;
+            } else {
+                categoryBtnEmoji.textContent = '🗂️';
+                categoryBtnLabel.textContent = `${selectedCategories.size} selected`;
+            }
+        }
+
+        function toggleCategorySelection(value) {
+            if (value === 'All') {
+                selectedCategories.clear();
+            } else {
+                if (selectedCategories.has(value)) selectedCategories.delete(value);
+                else selectedCategories.add(value);
+            }
+            updateCategoryButton();
+            categoryMenu.querySelectorAll('button[data-cat]').forEach(b => {
+                const cat = b.dataset.cat;
+                const active = cat === 'All' ? selectedCategories.size === 0 : selectedCategories.has(cat);
+                b.classList.toggle('bg-blue-50', active);
+                b.classList.toggle('text-blue-700', active);
+                b.classList.toggle('font-semibold', active);
+                const chk = b.querySelector('.cat-check');
+                if (chk) chk.style.opacity = active ? '1' : '0';
+            });
             drawSpikes();
             updateVisualization();
         }
@@ -562,7 +618,10 @@
             windowMenu.classList.add('hidden');
             if (isOpen) { categoryMenu.classList.add('hidden'); } else { openMenu(categoryMenu, categoryBtn); }
         });
+        let suppressNextMapClick = false;
         document.addEventListener('click', () => {
+            const anyOpen = !categoryMenu.classList.contains('hidden') || !windowMenu.classList.contains('hidden');
+            if (anyOpen) suppressNextMapClick = true;
             categoryMenu.classList.add('hidden');
             windowMenu.classList.add('hidden');
         });
@@ -580,6 +639,7 @@
 
         // Parallel View Elements
         const parallelView = document.getElementById('parallelView');
+        const parallelRows = document.getElementById('parallelRows');
         const parallelLeftCount  = document.getElementById('parallelLeftCount');
         const parallelRightCount = document.getElementById('parallelRightCount');
         const parallelRightTitle = document.getElementById('parallelRightTitle');
@@ -592,10 +652,37 @@
                 subdomains: 'abcd',
                 maxZoom: 19
             }).addTo(map);
-            activeLinesLayer = L.layerGroup().addTo(map); 
-            markersLayer = L.layerGroup().addTo(map); 
+            activeLinesLayer = L.layerGroup().addTo(map);
+            countryHighlightLayer = L.layerGroup().addTo(map);
+            markersLayer = L.layerGroup().addTo(map);
+
+            // Country click confirmation panel
+            const countryConfirmPanel = document.createElement('div');
+            countryConfirmPanel.id = 'countryConfirmPanel';
+            countryConfirmPanel.style.cssText = 'position:absolute;z-index:2100;background:white;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.15);padding:10px 12px;display:none;pointer-events:auto;font-family:inherit;min-width:160px';
+            countryConfirmPanel.innerHTML = `
+                <div style="font-size:12px;color:#475569;margin-bottom:8px">Focus on <strong id="countryConfirmName" style="color:#1e293b"></strong>?</div>
+                <div style="display:flex;gap:6px">
+                    <button id="countryConfirmYes" style="flex:1;background:#3b82f6;color:white;border:none;border-radius:6px;padding:5px 0;font-size:11px;font-weight:600;cursor:pointer">Confirm</button>
+                    <button id="countryConfirmNo" style="flex:1;background:#f1f5f9;color:#64748b;border:none;border-radius:6px;padding:5px 0;font-size:11px;font-weight:600;cursor:pointer">Cancel</button>
+                </div>`;
+            document.getElementById('map').appendChild(countryConfirmPanel);
+
+            countryConfirmPanel.addEventListener('click', (e) => e.stopPropagation());
+
+            document.getElementById('countryConfirmYes').addEventListener('click', () => {
+                countryConfirmPanel.style.display = 'none';
+                if (pendingCountry) { setGlobalSelectedCountry(pendingCountry); pendingCountry = null; }
+            });
+            document.getElementById('countryConfirmNo').addEventListener('click', () => {
+                countryConfirmPanel.style.display = 'none';
+                pendingCountry = null;
+            });
+
+            map.on('movestart', () => { countryConfirmPanel.style.display = 'none'; pendingCountry = null; });
 
             map.on('click', function(e) {
+                if (suppressNextMapClick) { suppressNextMapClick = false; return; }
                 if (!Object.keys(countryCoordinates).length) return;
 
                 const clickLat = e.latlng.lat;
@@ -618,7 +705,14 @@
                     if (dist < minDist) { minDist = dist; nearest = name; }
                 }
 
-                if (nearest) setGlobalSelectedCountry(nearest);
+                if (nearest) {
+                    pendingCountry = nearest;
+                    document.getElementById('countryConfirmName').textContent = nearest;
+                    const pt = map.latLngToContainerPoint(e.latlng);
+                    countryConfirmPanel.style.left = (pt.x + 10) + 'px';
+                    countryConfirmPanel.style.top  = (pt.y - 20) + 'px';
+                    countryConfirmPanel.style.display = 'block';
+                }
             });
         }
 
@@ -626,18 +720,37 @@
         function setGlobalSelectedCountry(countryName) {
             if (selectedCountry === countryName) return; // Prevent unnecessary list resets
             selectedCountry = countryName;
-            
+
             if (countryName) {
                 countryFilterContainer.classList.remove('hidden');
                 countryFilterContainer.classList.add('flex');
                 activeCountryLabel.textContent = countryName.toUpperCase();
-                chinaOnlyToggle.disabled = true; 
+                chinaOnlyToggle.disabled = true;
             } else {
                 countryFilterContainer.classList.add('hidden');
                 countryFilterContainer.classList.remove('flex');
                 chinaOnlyToggle.disabled = false;
             }
-            updateTimelineBounds(); 
+
+            if (countryHighlightLayer) {
+                countryHighlightLayer.clearLayers();
+                if (countryName) {
+                    const coords = countryCoordinates[countryName.toLowerCase()];
+                    if (coords) {
+                        L.marker(coords, {
+                            interactive: false,
+                            icon: L.divIcon({
+                                className: '',
+                                iconSize: [0, 0],
+                                iconAnchor: [0, 0],
+                                html: `<div class="country-ping"></div><div class="country-ping-dot"></div>`
+                            })
+                        }).addTo(countryHighlightLayer);
+                    }
+                }
+            }
+
+            updateTimelineBounds();
         }
         
         clearCountryBtn.addEventListener('click', () => { setGlobalSelectedCountry(null); });
@@ -736,20 +849,35 @@
             return '📍'; 
         }
 
+        function getCategoryColor(category) {
+            if (!category) return '#64748b';
+            const cat = String(category).toLowerCase();
+            if (cat.includes('war') || cat.includes('battle') || cat.includes('military') || cat.includes('conquest') || cat.includes('rebellion') || cat.includes('conflict') || cat.includes('confict') || cat.includes('intervention')) return '#e03131'; // red
+            if (cat.includes('political') || cat.includes('independence') || cat.includes('partition') || cat.includes('treaty') || cat.includes('diploma') || cat.includes('law') || cat.includes('colonial')) return '#f08c00';   // amber
+            if (cat.includes('science') || cat.includes('tech') || cat.includes('discover') || cat.includes('invent') || cat.includes('space')) return '#1971c2';                                                                     // blue
+            if (cat.includes('art') || cat.includes('music') || cat.includes('paint') || cat.includes('culture')) return '#ae3ec9';                                                                                                   // purple
+            if (cat.includes('nature') || cat.includes('environment') || cat.includes('earthquake') || cat.includes('disaster') || cat.includes('climate')) return '#2f9e44';                                                        // green
+            if (cat.includes('sport') || cat.includes('game') || cat.includes('olympic')) return '#74b816';                                                                                                                           // lime
+            if (cat.includes('figure') || cat.includes('person') || cat.includes('people') || cat.includes('biography')) return '#0c8599';                                                                                           // teal
+            if (cat.includes('literature') || cat.includes('book') || cat.includes('writ') || cat.includes('publish')) return '#3b5bdb';                                                                                              // indigo
+            if (cat.includes('philosophy') || cat.includes('religion') || cat.includes('thought') || cat.includes('idea')) return '#7950f2';                                                                                         // violet
+            if (cat.includes('architecture') || cat.includes('building') || cat.includes('construct') || cat.includes('monument')) return '#d6336c';                                                                                 // rose
+            if (cat.includes('milestone') || cat.includes('history') || cat.includes('event')) return '#f59f00';                                                                                                                     // gold
+            if (cat.includes('civilization') || cat.includes('empire') || cat.includes('dynasty') || cat.includes('settlement')) return '#c05c1f';                                                                                   // sienna
+            return '#64748b';
+        }
+
         function buildCategoryMenuItem(value, emoji, label) {
             const item = document.createElement('button');
             item.type = 'button';
-            item.className = `w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors text-left ${value === selectedCategory ? 'bg-blue-50 text-blue-700 font-semibold' : ''}`;
-            item.innerHTML = `<span class="text-base leading-none w-5 text-center">${emoji}</span><span class="truncate">${label}</span>`;
+            item.dataset.cat = value;
+            const active = value === 'All' ? selectedCategories.size === 0 : selectedCategories.has(value);
+            item.className = `w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors text-left ${active ? 'bg-blue-50 text-blue-700 font-semibold' : ''}`;
+            const dotColor = value === 'All' ? '#94a3b8' : getCategoryColor(value);
+            item.innerHTML = `<span class="text-base leading-none w-5 text-center">${emoji}</span><span style="width:7px;height:7px;border-radius:50%;background:${dotColor};display:inline-block;flex-shrink:0"></span><span class="truncate flex-1">${label}</span><span class="cat-check text-blue-600 font-bold text-xs" style="opacity:${active ? 1 : 0};transition:opacity 0.1s">✓</span>`;
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
-                setCategorySelection(value, emoji, label);
-                // re-highlight active item
-                categoryMenu.querySelectorAll('button').forEach(b => {
-                    b.classList.toggle('bg-blue-50', b === item);
-                    b.classList.toggle('text-blue-700', b === item);
-                    b.classList.toggle('font-semibold', b === item);
-                });
+                toggleCategorySelection(value);
             });
             return item;
         }
@@ -819,6 +947,29 @@
             listScrollRaf = requestAnimationFrame(syncTimelineToListScroll);
         }
 
+        function onParallelRowsScroll() {
+            if (yearSlider.disabled) return;
+            if (parallelScrollRaf) cancelAnimationFrame(parallelScrollRaf);
+            parallelScrollRaf = requestAnimationFrame(() => {
+                const items = parallelRows.querySelectorAll('[data-year]');
+                if (!items.length) return;
+                const rect = parallelRows.getBoundingClientRect();
+                const centerY = rect.top + rect.height / 2;
+                let best = null, bestDist = Infinity;
+                items.forEach(item => {
+                    const r = item.getBoundingClientRect();
+                    const dist = Math.abs(r.top + r.height / 2 - centerY);
+                    if (dist < bestDist) { bestDist = dist; best = item; }
+                });
+                if (!best) return;
+                const year = parseInt(best.dataset.year, 10);
+                if (Number.isNaN(year)) return;
+                const clamped = Math.max(globalMinYear, Math.min(globalMaxYear, year));
+                yearSlider.value = clamped;
+                syncYearInput(clamped);
+            });
+        }
+
         // Intelligent scroll logic to find specific events when markers or other lists are clicked
         function scrollToEvent(eventId) {
             suppressListScrollSync = true;
@@ -828,7 +979,7 @@
                 let targetEl = null;
 
                 if (isParallelMode) {
-                    targetEl = document.getElementById(`parallel-left-${eventId}`) || document.getElementById(`parallel-right-${eventId}`);
+                    targetEl = document.getElementById(`parallel-left-${eventId}`) || document.getElementById(`parallel-center-${eventId}`) || document.getElementById(`parallel-right-${eventId}`);
                 } else {
                     targetEl = document.getElementById(`list-item-${eventId}`);
                 }
@@ -889,6 +1040,96 @@
                     dotMarker.bindPopup(`<div class="p-1 min-w-[120px]"><h4 class="font-semibold text-xs text-blue-700 leading-tight mb-1">${ev.title}</h4><p class="text-[10px] text-slate-600"><strong>Involved:</strong> ${ev.allCountries[i] || 'Secondary Location'}</p><p class="text-[10px] text-slate-600"><strong>Primary:</strong> ${ev.region}</p></div>`);
                 }
             }
+        }
+
+        // --- Zheng He Voyage Routes ---
+
+        // Named sea-lane segments — dense coastline-accurate waypoints, no algorithmic curves needed
+        const ZH_SEG = {
+            // Stay east of Hainan Island (18-20°N must be >111°E to avoid land)
+            chinaCoast:        [[32.0,121.0],[27.2,120.3],[24.9,118.6],[22.5,114.1],[20.5,113.5],[18.5,111.8],[16.5,109.0]],
+            // Go south along east coast, round Singapore tip, enter Malacca Strait from south
+            vietnamToMalacca:  [[16.5,109.0],[11.0,109.5],[8.5,107.5],[4.5,104.5],[1.5,104.2],[1.2,103.9],[2.2,102.2]],
+            // Head northwest straight up the Malacca Strait
+            malaccaToSemudera: [[2.2,102.2],[3.5,100.5],[4.5,98.5],[5.5,95.3]],
+            semuderaToGalle:   [[5.5,95.3],[7.0,89.0],[6.5,83.5],[6.05,80.22]],
+            // Route west of Sri Lanka then around Cape Comorin (8.08°N,77.55°E) before heading north
+            galleToCalicut:    [[6.05,80.22],[6.5,79.0],[7.0,77.2],[8.5,76.3],[11.25,75.78]],
+            // Arc through Gulf of Oman center (24°N,61°E) to avoid Musandam Peninsula/Oman coast
+            calicutToHormuz:   [[11.25,75.78],[14.5,70.0],[18.0,64.0],[21.0,61.5],[24.0,61.0],[26.0,58.0],[27.1,56.5]],
+            // Return same Gulf of Oman arc before heading southwest through Arabian Sea
+            hormuzToAden:      [[27.1,56.5],[26.0,58.0],[24.0,61.0],[20.0,60.0],[16.5,56.0],[14.0,52.0],[13.0,48.0],[12.8,45.0]],
+            calicutToAden:     [[11.25,75.78],[13.0,67.0],[13.5,55.0],[13.0,50.0],[12.8,45.0]],
+            // Round Cape Guardafui (Horn of Africa, 11.8°N 51.3°E) then south along Somali coast
+            adenToMalindi:     [[12.8,45.0],[11.5,47.5],[12.0,51.5],[10.5,52.0],[7.0,50.5],[3.5,47.0],[2.04,45.34],[-1.5,41.5],[-3.22,40.12]]
+        };
+
+        // Concatenate segments, deduplicating shared junction points
+        function zhRoute(...segs) {
+            return segs.reduce((acc, seg) => acc.length ? [...acc, ...seg.slice(1)] : [...seg], []);
+        }
+
+        // Each voyage: route composed from shared segments + fixed label position in open ocean
+        const ZHENGHE_VOYAGES = [
+            { label: '1405–07', labelPos: [9.5, 90.0],
+              waypoints: zhRoute(ZH_SEG.chinaCoast, ZH_SEG.vietnamToMalacca, ZH_SEG.malaccaToSemudera, ZH_SEG.semuderaToGalle, ZH_SEG.galleToCalicut) },
+            { label: '1409–11', labelPos: [8.5, 84.5],
+              waypoints: zhRoute(ZH_SEG.chinaCoast, ZH_SEG.vietnamToMalacca, ZH_SEG.malaccaToSemudera, ZH_SEG.semuderaToGalle) },
+            { label: '1413–15', labelPos: [20.5, 63.5],
+              waypoints: zhRoute(ZH_SEG.chinaCoast, ZH_SEG.vietnamToMalacca, ZH_SEG.malaccaToSemudera, ZH_SEG.semuderaToGalle, ZH_SEG.galleToCalicut, ZH_SEG.calicutToHormuz, ZH_SEG.hormuzToAden, ZH_SEG.adenToMalindi) },
+            { label: '1417–19', labelPos: [16.5, 70.0],
+              waypoints: zhRoute(ZH_SEG.chinaCoast, ZH_SEG.vietnamToMalacca, ZH_SEG.malaccaToSemudera, ZH_SEG.semuderaToGalle, ZH_SEG.galleToCalicut, ZH_SEG.calicutToHormuz, ZH_SEG.hormuzToAden, ZH_SEG.adenToMalindi) },
+            { label: '1421–22', labelPos: [14.5, 60.5],
+              waypoints: zhRoute(ZH_SEG.chinaCoast, ZH_SEG.vietnamToMalacca, ZH_SEG.malaccaToSemudera, ZH_SEG.semuderaToGalle, ZH_SEG.galleToCalicut, ZH_SEG.calicutToAden, ZH_SEG.adenToMalindi) }
+        ];
+
+        function isZhengheEvent(ev) {
+            const t = (ev.title || '').toLowerCase();
+            return t.includes('zheng he') || t.includes('cheng ho');
+        }
+
+        function toggleZhengheRoutes(ev) {
+            if (zhengheLayer && zhengheActiveEventId === ev.id) {
+                zhengheLayer.remove(); zhengheLayer = null; zhengheActiveEventId = null;
+                return false;
+            }
+            if (zhengheLayer) { zhengheLayer.remove(); zhengheLayer = null; }
+            zhengheActiveEventId = ev.id;
+            activeLinesLayer.clearLayers();
+
+            zhengheLayer = L.layerGroup().addTo(map);
+            const color = '#cc2200';
+            const allWaypoints = [];
+
+            ZHENGHE_VOYAGES.forEach(voyage => {
+                const pts = voyage.waypoints;
+                allWaypoints.push(...pts);
+
+                // Single polyline — dense waypoints give shape, no algorithmic bowing
+                const line = L.polyline(pts, { color, weight: 1.8, opacity: 0.82, dashArray: '7,4' });
+                line.addTo(zhengheLayer);
+                line.on('add', () => { const el = line.getElement(); if (el) el.classList.add('animated-route'); });
+
+                // Open arrowhead at endpoint
+                L.polylineDecorator(line, {
+                    patterns: [{ offset: '100%', repeat: 0,
+                        symbol: L.Symbol.arrowHead({ pixelSize: 9, polygon: false,
+                            pathOptions: { color, weight: 2.2, opacity: 0.9 }
+                        })
+                    }]
+                }).addTo(zhengheLayer);
+
+                // Year label at fixed open-ocean position (pre-calculated per voyage)
+                L.marker(voyage.labelPos, { interactive: false, icon: L.divIcon({
+                    html: `<span style="font-size:9px;font-style:italic;font-weight:700;color:${color};white-space:nowrap;text-shadow:0 0 2px #fff,0 0 2px #fff,0 0 2px #fff">${voyage.label}</span>`,
+                    className: '', iconSize: [44, 12], iconAnchor: [22, 6]
+                })}).addTo(zhengheLayer);
+            });
+
+            if (allWaypoints.length) {
+                map.flyToBounds(L.latLngBounds(allWaypoints), { padding: [60, 60], maxZoom: 4, duration: 1.2 });
+            }
+            return true;
         }
 
         // --- Core Wikipedia Fetching & Caching Engine ---
@@ -1030,7 +1271,10 @@
                 }
                 
                 const numYear = parseYear(rawYear);
-                
+                if (numYear !== null && numYear > 0 && rawYear && !/BC|AD|CE|BCE/i.test(rawYear)) {
+                    rawYear = rawYear.trim() + ' AD';
+                }
+
                 if (numYear !== null) {
                     const countries = [];
                     const coordsList = [];
@@ -1097,16 +1341,14 @@
 
             if (eventsData.length === 0) { alert("No valid events found."); return; }
 
-            // Build custom category dropdown
-            selectedCategory = 'All';
+            // Build category dropdown
+            selectedCategories.clear();
             categoryBtnEmoji.textContent = '🗂️';
             categoryBtnLabel.textContent = 'All';
             categoryMenu.innerHTML = '';
-            const allItem = buildCategoryMenuItem('All', '🗂️', 'All Categories');
-            categoryMenu.appendChild(allItem);
+            categoryMenu.appendChild(buildCategoryMenuItem('All', '🗂️', 'All Categories'));
             Array.from(categories).sort().forEach(cat => {
-                const emoji = getCategoryEmoji(cat);
-                categoryMenu.appendChild(buildCategoryMenuItem(cat, emoji, cat));
+                categoryMenu.appendChild(buildCategoryMenuItem(cat, getCategoryEmoji(cat), cat));
             });
 
             eventsData.sort((a, b) => a.numYear - b.numYear);
@@ -1248,13 +1490,12 @@
             connectingDotsContainer.innerHTML = '';
             if (maxYear === minYear) return;
 
-            const selectedCat = selectedCategory;
             const aboveFrag = document.createDocumentFragment();
             const belowFrag = document.createDocumentFragment();
             const dotFrag = document.createDocumentFragment();
 
             eventsData.forEach(ev => {
-                if (selectedCat !== 'All' && ev.category !== selectedCat) return;
+                if (selectedCategories.size > 0 && !selectedCategories.has(ev.category)) return;
 
                 const isChina = hasChina(ev);
 
@@ -1280,15 +1521,16 @@
                 spike.style.left = `${percent}%`;
                 spike.className = 'timeline-event-spike';
 
+                const spikeColor = getCategoryColor(ev.category);
                 if (isChina) {
                     spike.classList.add('rounded-t-sm');
-                    spike.style.background = '#ef4444';
+                    spike.style.background = spikeColor;
                     spike.style.top = '0';
                     spike.style.height = '100%';
                     aboveFrag.appendChild(spike);
                 } else {
                     spike.classList.add('rounded-b-sm');
-                    spike.style.background = '#64748b';
+                    spike.style.background = spikeColor;
                     spike.style.top = '0';
                     spike.style.height = '100%';
                     belowFrag.appendChild(spike);
@@ -1337,6 +1579,7 @@
         function buildParallelCard(ev, prefix) {
             const el = document.createElement('div');
             el.id = `${prefix}-${ev.id}`;
+            el.dataset.year = String(ev.numYear);
             el.className = 'bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer flex overflow-hidden min-h-[96px]';
             el.innerHTML = `
                 <div class="w-32 bg-slate-200 shrink-0 flex items-center justify-center relative border-r border-slate-100">
@@ -1351,15 +1594,13 @@
                     <p class="text-[10px] text-slate-500 font-bold mb-1">${ev.region}</p>
                     ${ev.impact ? `<p class="text-[11px] text-slate-600 mb-2 line-clamp-2">${ev.impact}</p>` : ''}
                 </div>`;
-            el.addEventListener('click', () => {
-                activeLinesLayer.clearLayers();
-                drawEventLines(ev, activeLinesLayer);
-                if (ev.allCoords && ev.allCoords.length > 1) { map.flyToBounds(L.latLngBounds(ev.allCoords), { padding: [50, 50], maxZoom: 5 }); }
-                else if (ev.latlng) { map.flyTo(ev.latlng, 5); }
-                clearTimeout(wikiDebounceTimer);
-                isWikiClosedByUser = false;
-                loadWikipediaSummary(ev);
-                scrollToEvent(ev.id);
+            el.addEventListener('click', async () => {
+                if (isZhengheEvent(ev)) { toggleZhengheRoutes(ev); }
+                const data = await fetchWikiData(ev);
+                const url = (data && data.page)
+                    ? data.page
+                    : `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(ev.title)}`;
+                window.open(url, '_blank');
             });
             thumbObserver.observe(el.querySelector('.wiki-thumb'));
             return el;
@@ -1375,13 +1616,11 @@
                 return;
             }
 
-            // Group each side's events by year
             const leftByYear  = new Map();
             const rightByYear = new Map();
-            leftEvents.forEach(ev  => { if (!leftByYear.has(ev.numYear))  leftByYear.set(ev.numYear, []);  leftByYear.get(ev.numYear).push(ev);  });
+            leftEvents.forEach(ev  => { if (!leftByYear.has(ev.numYear))  leftByYear.set(ev.numYear, []);  leftByYear.get(ev.numYear).push(ev); });
             rightEvents.forEach(ev => { if (!rightByYear.has(ev.numYear)) rightByYear.set(ev.numYear, []); rightByYear.get(ev.numYear).push(ev); });
 
-            // All unique years in order
             const allYears = [...new Set([...leftEvents, ...rightEvents].map(e => e.numYear))].sort((a, b) => a - b);
 
             const frag = document.createDocumentFragment();
@@ -1434,7 +1673,6 @@
         function updateVisualization() {
             const cursorYear = parseInt(yearSlider.value, 10);
             const windowSize = selectedWindow;
-            const selectedCat = selectedCategory;
             syncYearInput(cursorYear);
             updateWindowBracket();
 
@@ -1442,7 +1680,7 @@
             const endYear = windowCenterYear + windowSize;
 
             const baseActiveEvents = eventsData.filter(ev => {
-                if (selectedCat !== 'All' && ev.category !== selectedCat) return false;
+                if (selectedCategories.size > 0 && !selectedCategories.has(ev.category)) return false;
                 return ev.numYear >= startYear && ev.numYear <= endYear;
             });
 
@@ -1473,6 +1711,24 @@
                 parallelRightCount.textContent = rightEvents.length;
                 parallelRightTitle.textContent = (selectedCountry ? '📍 ' + selectedCountry.toUpperCase() : '🌍 WORLD');
 
+                // Scroll parallel rows to the entered year
+                requestAnimationFrame(() => {
+                    const items = parallelRows.querySelectorAll('[data-year]');
+                    if (!items.length) return;
+                    let nearest = null, nearestDist = Infinity;
+                    items.forEach(item => {
+                        const yr = parseInt(item.dataset.year, 10);
+                        if (!Number.isNaN(yr)) {
+                            const d = Math.abs(yr - windowCenterYear);
+                            if (d < nearestDist) { nearestDist = d; nearest = item; }
+                        }
+                    });
+                    if (nearest) {
+                        nearest.scrollIntoView({ behavior: listScrollBehavior === 'smooth' ? 'smooth' : 'auto', block: 'center' });
+                        listScrollBehavior = 'auto';
+                    }
+                });
+
             } else {
                 parallelView.classList.add('hidden');
                 parallelView.classList.remove('flex');
@@ -1492,7 +1748,8 @@
 
                 const listEvents = mapEvents.slice().sort((a, b) => a.numYear - b.numYear);
 
-                markersLayer.clearLayers(); activeLinesLayer.clearLayers();
+                markersLayer.clearLayers(); activeLinesLayer.clearLayers(); eventToMarker.clear();
+                if (zhengheLayer) { zhengheLayer.remove(); zhengheLayer = null; zhengheActiveEventId = null; }
                 eventCount.textContent = listEvents.length;
 
                 clearTimeout(wikiDebounceTimer);
@@ -1504,6 +1761,19 @@
                     emptyEl.className = 'text-center text-slate-400 mt-10';
                     emptyEl.innerHTML = '<p>No events in this time period.</p>';
                     listFragment.appendChild(emptyEl);
+                }
+
+                // Shared hover panel for multi-event clusters (created once, reused)
+                let clusterPanel = document.getElementById('clusterTooltipPanel');
+                if (!clusterPanel) {
+                    clusterPanel = document.createElement('div');
+                    clusterPanel.id = 'clusterTooltipPanel';
+                    clusterPanel.style.cssText = 'position:absolute;z-index:2000;background:white;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.13);padding:6px 8px;display:none;pointer-events:auto;min-width:180px;max-height:240px;overflow-y:auto;font-family:inherit';
+                    document.getElementById('map').appendChild(clusterPanel);
+                    clusterPanel.addEventListener('mouseenter', () => clearTimeout(clusterPanelTimer));
+                    clusterPanel.addEventListener('mouseleave', () => { clusterPanel.style.display = 'none'; });
+                    clusterPanel.addEventListener('click', (e) => e.stopPropagation());
+                    map.on('movestart', () => { clusterPanel.style.display = 'none'; });
                 }
 
                 const clusteredPrimary = {};
@@ -1525,7 +1795,8 @@
                         const radius = 18;
                         const emoji = getCategoryEmoji(cluster.events[0].category);
 
-                        const iconHtml = `<div class="flex items-center justify-center w-full h-full transition-transform hover:scale-125" style="font-size: ${radius*1.5}px; line-height: 1; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5)); text-shadow: 0px 0px 4px rgba(255,255,255,0.8);">${emoji}</div>`;
+                        const badge = count > 1 ? `<div style="position:absolute;bottom:-4px;right:-4px;min-width:16px;height:16px;background:#475569;border:1.5px solid white;border-radius:9999px;font-size:10px;font-weight:700;color:white;display:flex;align-items:center;justify-content:center;padding:0 3px;line-height:1;box-shadow:0 1px 3px rgba(0,0,0,0.3)">${count}</div>` : '';
+                        const iconHtml = `<div style="position:relative;width:${radius*2}px;height:${radius*2}px"><div class="flex items-center justify-center w-full h-full transition-transform hover:scale-125" style="font-size:${radius*1.5}px;line-height:1;filter:drop-shadow(0px 2px 4px rgba(0,0,0,0.5));text-shadow:0px 0px 4px rgba(255,255,255,0.8);">${emoji}</div>${badge}</div>`;
 
                         const sectorIcon = L.divIcon({
                             html: iconHtml,
@@ -1537,28 +1808,88 @@
 
                         const marker = L.marker(cluster.latlng, { icon: sectorIcon }).addTo(markersLayer);
 
-                        let popupHtml = `<div class="max-h-64 overflow-y-auto w-64 pr-2"><h3 class="font-bold text-slate-800 border-b border-slate-100 pb-2 mb-2 sticky top-0 bg-white">${cluster.events[0].region} <span class="text-sm font-normal text-slate-400">(${count} Event${count>1?'s':''})</span></h3>`;
-                        cluster.events.forEach(ev => {
-                            popupHtml += `<div class="mb-3 pb-3 border-b border-slate-100 last:border-0 last:mb-0 last:pb-0"><h4 class="font-semibold text-sm text-blue-700 leading-tight mb-1">${ev.title}</h4><div class="flex items-center gap-2 mb-1"><span class="text-xs font-bold text-slate-400">${ev.rawYear}</span></div><p class="text-xs text-slate-600"><strong>Category:</strong> ${ev.category}</p>${ev.impact ? `<p class="text-xs text-slate-600 mt-1 line-clamp-3" title="${ev.impact}">${ev.impact}</p>` : ''}</div>`;
+                        cluster.events.forEach(ev => eventToMarker.set(ev.id, marker));
+
+                        marker.on('mouseover', () => {
+                            const mEl = marker.getElement();
+                            if (mEl) mEl.style.filter = 'drop-shadow(0 0 10px rgba(59,130,246,0.85))';
+                            cluster.events.forEach(ev => {
+                                const li = document.getElementById(`list-item-${ev.id}`);
+                                if (li) li.classList.add('ring-2', 'ring-blue-400', 'bg-blue-50/60');
+                            });
+                            if (count > 1) {
+                                clearTimeout(clusterPanelTimer);
+                                const pt = map.latLngToContainerPoint(cluster.latlng);
+                                clusterPanel.style.left = (pt.x + 26) + 'px';
+                                clusterPanel.style.top  = Math.max(4, pt.y - 16) + 'px';
+                                clusterPanel.innerHTML = cluster.events.map((ev, i) => {
+                                    const em = getCategoryEmoji(ev.category);
+                                    return `<div data-ev-id="${ev.id}" style="display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;cursor:pointer;${i > 0 ? 'border-top:1px solid #f1f5f9;' : ''}">
+                                        <span style="font-size:15px;flex-shrink:0">${em}</span>
+                                        <div style="min-width:0">
+                                            <div style="font-size:11px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:145px">${ev.title}</div>
+                                            <div style="font-size:10px;color:#94a3b8">${ev.rawYear}</div>
+                                        </div>
+                                    </div>`;
+                                }).join('');
+                                clusterPanel.style.display = 'block';
+                                clusterPanel.querySelectorAll('[data-ev-id]').forEach(row => {
+                                    row.addEventListener('mouseenter', () => { row.style.background = '#f8fafc'; });
+                                    row.addEventListener('mouseleave', () => { row.style.background = ''; });
+                                    row.addEventListener('click', () => {
+                                        const ev = cluster.events.find(e => String(e.id) === row.dataset.evId);
+                                        if (!ev) return;
+                                        clusterPanel.style.display = 'none';
+                                        if (isZhengheEvent(ev)) {
+                                            toggleZhengheRoutes(ev);
+                                        } else {
+                                            if (zhengheLayer) { zhengheLayer.remove(); zhengheLayer = null; zhengheActiveEventId = null; }
+                                            activeLinesLayer.clearLayers();
+                                            drawEventLines(ev, activeLinesLayer);
+                                            if (ev.allCoords && ev.allCoords.length > 1) { map.flyToBounds(L.latLngBounds(ev.allCoords), { padding: [50,50], maxZoom: 5 }); }
+                                            else if (ev.latlng) { map.flyTo(ev.latlng, 5); }
+                                        }
+                                        clearTimeout(wikiDebounceTimer);
+                                        isWikiClosedByUser = false;
+                                        loadWikipediaSummary(ev);
+                                        scrollToEvent(ev.id);
+                                    });
+                                });
+                            }
                         });
-                        popupHtml += `</div>`;
-                        marker.bindPopup(popupHtml);
+                        marker.on('mouseout', () => {
+                            const mEl = marker.getElement();
+                            if (mEl) mEl.style.filter = '';
+                            cluster.events.forEach(ev => {
+                                const li = document.getElementById(`list-item-${ev.id}`);
+                                if (li) li.classList.remove('ring-2', 'ring-blue-400', 'bg-blue-50/60');
+                            });
+                            if (count > 1) {
+                                clusterPanelTimer = setTimeout(() => { clusterPanel.style.display = 'none'; }, 200);
+                            }
+                        });
 
                         marker.on('click', (e) => {
                             L.DomEvent.stopPropagation(e);
-                            activeLinesLayer.clearLayers();
+                            const firstEv = cluster.events[0];
 
-                            let allClusterCoords = [];
-                            cluster.events.forEach(ev => { drawEventLines(ev, activeLinesLayer); if (ev.allCoords) allClusterCoords.push(...ev.allCoords); });
-
-                            const uniqueLocs = new Set(allClusterCoords.map(c => `${c[0]},${c[1]}`));
-                            if (uniqueLocs.size > 1) { map.flyToBounds(L.latLngBounds(allClusterCoords), { padding: [50, 50], maxZoom: 5 }); }
-                            else { map.flyTo(cluster.latlng, 5); }
+                            if (isZhengheEvent(firstEv)) {
+                                const proceed = toggleZhengheRoutes(firstEv);
+                                if (!proceed) return;
+                            } else {
+                                if (zhengheLayer) { zhengheLayer.remove(); zhengheLayer = null; zhengheActiveEventId = null; }
+                                activeLinesLayer.clearLayers();
+                                let allClusterCoords = [];
+                                cluster.events.forEach(ev => { drawEventLines(ev, activeLinesLayer); if (ev.allCoords) allClusterCoords.push(...ev.allCoords); });
+                                const uniqueLocs = new Set(allClusterCoords.map(c => `${c[0]},${c[1]}`));
+                                if (uniqueLocs.size > 1) { map.flyToBounds(L.latLngBounds(allClusterCoords), { padding: [50, 50], maxZoom: 5 }); }
+                                else { map.flyTo(cluster.latlng, 5); }
+                            }
 
                             clearTimeout(wikiDebounceTimer);
                             isWikiClosedByUser = false;
-                            loadWikipediaSummary(cluster.events[0]);
-                            scrollToEvent(cluster.events[0].id);
+                            loadWikipediaSummary(firstEv);
+                            scrollToEvent(firstEv.id);
                         });
                     });
 
@@ -1568,13 +1899,51 @@
                         el.dataset.year = String(ev.numYear);
                         const emoji = getCategoryEmoji(ev.category);
                         el.className = 'bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-all cursor-pointer';
-                        el.innerHTML = `<div class="flex justify-between items-start mb-1 gap-2"><div class="flex items-start gap-2 flex-1 min-w-0"><span class="text-lg leading-none shrink-0 mt-0.5" aria-hidden="true">${emoji}</span><h3 class="text-sm font-bold text-slate-800 leading-tight">${ev.title}</h3></div><span class="text-xs font-bold whitespace-nowrap bg-slate-100 px-2 py-1 rounded text-slate-600 shrink-0">${ev.rawYear}</span></div><div class="flex items-center gap-2 mb-2 text-xs"><span class="font-medium text-slate-400 flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>${ev.allCountries && ev.allCountries.length > 0 ? ev.allCountries.join(', ') : ev.region}</span></div>${ev.impact ? `<p class="text-xs text-slate-600 mb-2">${ev.impact}</p>` : ''}<div class="flex items-center mt-2 pt-2 border-t border-slate-100"><span class="text-[10px] uppercase font-semibold text-slate-400">${ev.category}</span></div>`;
+                        el.innerHTML = `
+                            <div class="flex items-start gap-2 mb-2">
+                                <span class="text-lg leading-none shrink-0 mt-0.5" aria-hidden="true">${emoji}</span>
+                                <h3 class="text-sm font-bold text-slate-800 leading-tight">${ev.title}</h3>
+                            </div>
+                            <div class="overflow-hidden">
+                                <div class="float-right ml-2 mb-1 w-16 h-16 rounded overflow-hidden bg-slate-200 relative flex items-center justify-center">
+                                    <img data-title="${escapeHtml(ev.title)}" data-wiki="${ev.wikiUrl || ''}" class="wiki-thumb absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" />
+                                    <svg class="w-5 h-5 text-slate-300 placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-xs text-slate-400 mb-1.5 flex-wrap">
+                                    <span class="flex items-center gap-1"><svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${ev.allCountries && ev.allCountries.length > 0 ? ev.allCountries.join(', ') : ev.region}</span>
+                                </div>
+                                ${ev.impact ? `<p class="text-xs text-slate-500 line-clamp-3 mb-1.5 leading-relaxed">${ev.impact}</p>` : ''}
+                                <div class="clear-both pt-0.5 border-t border-slate-100 mt-0.5 flex items-center justify-between">
+                                    <span class="text-[10px] uppercase font-semibold text-slate-400 tracking-wide">${ev.category}</span>
+                                    <span class="text-[10px] font-bold bg-slate-100 px-2 py-0.5 rounded text-slate-500">${ev.rawYear}</span>
+                                </div>
+                            </div>`;
+                        thumbObserver.observe(el.querySelector('.wiki-thumb'));
+
+                        el.addEventListener('mouseenter', () => {
+                            el.classList.add('ring-2', 'ring-blue-400', 'bg-blue-50/60');
+                            const m = eventToMarker.get(ev.id);
+                            const mEl = m?.getElement();
+                            if (mEl) mEl.style.filter = 'drop-shadow(0 0 10px rgba(59,130,246,0.85))';
+                        });
+                        el.addEventListener('mouseleave', () => {
+                            el.classList.remove('ring-2', 'ring-blue-400', 'bg-blue-50/60');
+                            const m = eventToMarker.get(ev.id);
+                            const mEl = m?.getElement();
+                            if (mEl) mEl.style.filter = '';
+                        });
 
                         el.addEventListener('click', () => {
-                            activeLinesLayer.clearLayers();
-                            drawEventLines(ev, activeLinesLayer);
-                            if (ev.allCoords && ev.allCoords.length > 1) { map.flyToBounds(L.latLngBounds(ev.allCoords), { padding: [50, 50], maxZoom: 5 }); }
-                            else if (ev.latlng) { map.flyTo(ev.latlng, 5); }
+                            if (isZhengheEvent(ev)) {
+                                const proceed = toggleZhengheRoutes(ev);
+                                if (!proceed) return;
+                            } else {
+                                if (zhengheLayer) { zhengheLayer.remove(); zhengheLayer = null; zhengheActiveEventId = null; }
+                                activeLinesLayer.clearLayers();
+                                drawEventLines(ev, activeLinesLayer);
+                                if (ev.allCoords && ev.allCoords.length > 1) { map.flyToBounds(L.latLngBounds(ev.allCoords), { padding: [50, 50], maxZoom: 5 }); }
+                                else if (ev.latlng) { map.flyTo(ev.latlng, 5); }
+                            }
 
                             clearTimeout(wikiDebounceTimer);
                             isWikiClosedByUser = false;
@@ -1588,7 +1957,9 @@
 
                 eventsList.replaceChildren(listFragment);
                 if (listEvents.length > 0) {
-                    wikiDebounceTimer = setTimeout(() => { loadWikipediaSummary(listEvents[0]); }, 600);
+                    wikiDebounceTimer = setTimeout(() => {
+                        if (isPlaying) { isWikiClosedByUser = false; loadWikipediaSummary(listEvents[0]); }
+                    }, 600);
                     scrollListToNearestYear(windowCenterYear, listEvents);
                 }
             }
@@ -1602,8 +1973,13 @@
             updateVisualization();
         });
         eventsList.addEventListener('scroll', onEventsListScroll, { passive: true });
+        parallelRows.addEventListener('scroll', onParallelRowsScroll, { passive: true });
         chinaOnlyToggle.addEventListener('change', () => { drawSpikes(); updateVisualization(); });
         parallelToggle.addEventListener('change', updateVisualization);
+        document.getElementById('parallelCloseBtn').addEventListener('click', () => {
+            parallelToggle.checked = false;
+            updateVisualization();
+        });
 
         closeWikiBtn.addEventListener('click', () => {
             wikiPanel.classList.add('hidden'); wikiPanel.classList.remove('flex');
@@ -1715,20 +2091,33 @@
             if (isPlaying) {
                 iconPlay.classList.add('hidden'); iconPause.classList.remove('hidden');
                 playBtn.classList.replace('bg-blue-600', 'bg-red-500'); playBtn.classList.replace('hover:bg-blue-700', 'hover:bg-red-600');
-                const range = maxYear - minYear;
-                const step = Math.max(1, Math.floor(range / 100));
 
-                playInterval = setInterval(() => {
-                    let nextVal = parseInt(yearSlider.value) + step;
-                    if (nextVal > maxYear) { nextVal = maxYear; togglePlay(); }
-                    yearSlider.value = nextVal;
-                    windowCenterYear = nextVal;
+                const eventYears = [...new Set(eventsData.map(ev => ev.numYear))]
+                    .filter(y => y >= minYear && y <= maxYear)
+                    .sort((a, b) => a - b);
+
+                if (!eventYears.length) { togglePlay(); return; }
+
+                let playIdx = Math.max(0, eventYears.findIndex(y => y >= windowCenterYear));
+
+                const advance = () => {
+                    if (playIdx >= eventYears.length) { togglePlay(); return; }
+                    const yr = eventYears[playIdx++];
+                    yearSlider.value = yr;
+                    windowCenterYear = yr;
+                    listScrollBehavior = 'smooth';
                     updateVisualization();
-                }, 200);
+                };
+
+                advance();
+                playInterval = setInterval(advance, 3000);
             } else {
                 iconPlay.classList.remove('hidden'); iconPause.classList.add('hidden');
                 playBtn.classList.replace('bg-red-500', 'bg-blue-600'); playBtn.classList.replace('hover:bg-red-600', 'hover:bg-blue-700');
                 clearInterval(playInterval);
+                isWikiClosedByUser = true;
+                wikiPanel.classList.add('hidden'); wikiPanel.classList.remove('flex');
+                setTimeout(() => { if (map) map.invalidateSize(); }, 300);
             }
         }
 
